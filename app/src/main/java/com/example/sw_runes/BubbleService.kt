@@ -1,26 +1,17 @@
 package com.example.sw_runes
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.os.*
-import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.AbstractComposeView
+import android.widget.LinearLayout
+import androidx.compose.foundation.layout.*
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.*
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
@@ -100,7 +91,10 @@ class BubbleService : Service() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
+
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH ,
+
             PixelFormat.TRANSPARENT
         )
 
@@ -191,14 +185,27 @@ class BubbleService : Service() {
 
         }
 
-            val composeView = ComposeView(this)
+
+
+        val  fl = FrameLayout(this).apply {
+
+            val composeView = ComposeView(context)
+            composeView.apply {
+                parent
+            }
             composeView.setContent {
+
+
                 Bubble({
 
                     println("qsdf")
 
                 })
+
+
+
             }
+            val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
             // Trick The ComposeView into thinking we are tracking lifecycle
             val viewModelStore = ViewModelStore()
@@ -208,10 +215,11 @@ class BubbleService : Service() {
             ViewTreeLifecycleOwner.set(composeView, lifecycleOwner)
             ViewTreeViewModelStoreOwner.set(composeView) { viewModelStore }
             composeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
-            floatyView = composeView
-            floatyView
-            windowManager!!.addView(floatyView, params)
 
+        }
+
+        floatyView = fl
+        windowManager!!.addView(floatyView, params)
     }
 
     //Close service
