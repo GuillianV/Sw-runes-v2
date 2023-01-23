@@ -5,28 +5,22 @@ import android.app.Activity
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.PixelFormat
-import android.graphics.drawable.Drawable
 import android.os.*
 import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.content.ContentProviderCompat.requireContext
-import com.example.sw_runes.ui.theme.SwRunesTheme
+import androidx.lifecycle.*
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryController
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import java.util.*
 
 
@@ -34,7 +28,7 @@ enum class TapStatus {
    Tap,Drag,Nothing
 }
 
-class BubbleService : Service()  {
+class BubbleService : Service() {
     private var windowManager: WindowManager? = null
     private var floatyView: View? = null
 
@@ -44,6 +38,7 @@ class BubbleService : Service()  {
 
 
     override fun onBind(intent: Intent): IBinder? {
+
         return null
     }
 
@@ -89,6 +84,7 @@ class BubbleService : Service()  {
 
 
     @SuppressLint("WrongConstant")
+
     private fun addOverlayView() {
         val layoutParamsType: Int
         layoutParamsType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -196,7 +192,23 @@ class BubbleService : Service()  {
         }
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         if (inflater != null) {
-            floatyView = ComposeView(context = applicationContext).apply {  }
+
+
+
+            val composeView = ComposeView(this)
+            composeView.setContent {
+                Container()
+            }
+
+            // Trick The ComposeView into thinking we are tracking lifecycle
+            val viewModelStore = ViewModelStore()
+            val lifecycleOwner = MyLifecycleOwner()
+            lifecycleOwner.performRestore(null)
+            lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+            ViewTreeLifecycleOwner.set(composeView, lifecycleOwner)
+            ViewTreeViewModelStoreOwner.set(composeView) { viewModelStore }
+            composeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
+            floatyView = composeView
             windowManager!!.addView(floatyView, params)
         } else {
             Log.e(
@@ -238,5 +250,40 @@ class BubbleService : Service()  {
 
 
 
+    internal class MyLifecycleOwner : SavedStateRegistryOwner {
+        private var mLifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
+        private var mSavedStateRegistryController: SavedStateRegistryController = SavedStateRegistryController.create(this)
+
+        /**
+         * @return True if the Lifecycle has been initialized.
+         */
+        val isInitialized: Boolean
+            get() = true
+
+        override val savedStateRegistry: SavedStateRegistry
+            get() = mSavedStateRegistryController.savedStateRegistry
+
+        override fun getLifecycle(): Lifecycle {
+            return mLifecycleRegistry
+        }
+
+        fun setCurrentState(state: Lifecycle.State) {
+            mLifecycleRegistry.currentState = state
+        }
+
+        fun handleLifecycleEvent(event: Lifecycle.Event) {
+            mLifecycleRegistry.handleLifecycleEvent(event)
+        }
+
+
+
+        fun performRestore(savedState: Bundle?) {
+            mSavedStateRegistryController.performRestore(savedState)
+        }
+
+        fun performSave(outBundle: Bundle) {
+            mSavedStateRegistryController.performSave(outBundle)
+        }
+    }
 
 }
