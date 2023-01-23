@@ -96,11 +96,7 @@ fun Modifier.outterShadow() = composed(
             Paint()
         }
 
-        val foregroundPaint = remember() {
-            Paint().apply {
-                color = Color.Yellow
-            }
-        }
+
 
         val frameworkPaint = remember {
             paint.asFrameworkPaint()
@@ -108,12 +104,12 @@ fun Modifier.outterShadow() = composed(
 
         Modifier.drawWithContent {
             this.drawIntoCanvas {
-                val color = Color.LightGray
+                val color = Color.Black
 
                 val radius = 2.dp.toPx()
 
                 val shadowColor = color
-                    .copy(alpha = .7f)
+                    .copy(alpha = .20f)
                     .toArgb()
                 val transparent = color
                     .copy(alpha = 0f)
@@ -123,41 +119,23 @@ fun Modifier.outterShadow() = composed(
 
                 frameworkPaint.setShadowLayer(
                     radius,
-                    0f,
-                    0f,
+                    2f,
+                    2f,
                     shadowColor
                 )
-                val shadowRadius = 4.dp.toPx()
+                val shadowRadius = borderRadiusSize.toPx()
+
+
 
                 it.drawRoundRect(
                     left = 0f,
                     top = 0f,
                     right = this.size.width,
-                    bottom = this.size.height,
-                    radiusX = 5.dp.toPx(),
-                    radiusY = 5.dp.toPx(),
-                    paint = foregroundPaint
-                )
-
-                it.drawRoundRect(
-                    left = 0f,
-                    top = 0f,
-                    right = this.size.width,
-                    bottom = this.size.height,
-                    radiusX = 5.dp.toPx(),
-                    radiusY = 5.dp.toPx(),
+                    bottom = this.size.height, borderRadiusSize.toPx(), borderRadiusSize.toPx(),
                     paint = paint
                 )
 
-                it.drawRoundRect(
-                    left = shadowRadius,
-                    top = shadowRadius,
-                    right = this.size.width - shadowRadius,
-                    bottom = this.size.height - shadowRadius,
-                    radiusX = 5.dp.toPx(),
-                    radiusY = 5.dp.toPx(),
-                    paint = foregroundPaint
-                )
+
                 drawContent()
 
             }
