@@ -1,15 +1,11 @@
-package com.example.sw_runes
+package com.example.sw_runes.ui
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,29 +20,29 @@ import com.example.sw_runes.ui.theme.*
 @Composable
 fun DefaultPreview() {
     SwRunesTheme {
-        Container( )
+        Bubble({ return@Bubble } )
     }
 }
 
 @Composable
-inline fun Container() {
+inline fun Bubble(crossinline click: () -> Unit) {
     Box(modifier = Modifier
-        .padding(padding)
+    .padding(padding)
         .innerShadow(
             Color.Black.copy(alpha = 0.25F),
-            borderRadiusSize, 2.dp, 2.dp, 2.dp, 2.dp
+            50.dp, 2.dp, 2.dp, 2.dp, 2.dp
         )
-        .outterShadow(borderRadiusSize)
-        .clip(boxShape)
-        .background(MaterialTheme.colorScheme.background)
+        .outterShadow(50.dp)
+        .clip(RoundedCornerShape(50.dp))
+        .background(MaterialTheme.colorScheme.background).width(75.dp).height(75.dp).clickable( onClick =  { click() } , )
         .border(
             1.dp,
             MaterialTheme.colorScheme.primary,
-            shape = boxShape,
+            shape = RoundedCornerShape(50.dp),
         )
         .padding(padding)){
 
-        Text(text = "sdqdsq")
+
 
     }
 }

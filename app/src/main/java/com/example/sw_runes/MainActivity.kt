@@ -63,8 +63,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             SwRunesTheme {
 
-                val activity = LocalContext.current as Activity
-                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+              /*  val activity = LocalContext.current as Activity
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE */
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),

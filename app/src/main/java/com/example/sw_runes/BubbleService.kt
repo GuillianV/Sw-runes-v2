@@ -11,7 +11,12 @@ import android.os.*
 import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
@@ -21,6 +26,7 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.example.sw_runes.ui.Bubble
 import java.util.*
 
 
@@ -32,7 +38,7 @@ class BubbleService : Service() {
     private var windowManager: WindowManager? = null
     private var floatyView: View? = null
 
-    private var mOrientationChangeCallback: OrientationChangeCallback? = null
+
     private lateinit var params :WindowManager.LayoutParams;
 
 
@@ -86,16 +92,11 @@ class BubbleService : Service() {
     @SuppressLint("WrongConstant")
 
     private fun addOverlayView() {
-        val layoutParamsType: Int
-        layoutParamsType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        } else {
-            WindowManager.LayoutParams.TYPE_PHONE
-        }
+
         params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
-            layoutParamsType,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
@@ -107,13 +108,12 @@ class BubbleService : Service() {
         params.x = 0
         params.y = 0
 
-        mOrientationChangeCallback = OrientationChangeCallback(this)
-        if (mOrientationChangeCallback!!.canDetectOrientation()) {
+        var mOrientationChangeCallback = OrientationChangeCallback(this)
+        if (mOrientationChangeCallback?.canDetectOrientation() == true) {
             mOrientationChangeCallback!!.enable()
         }
 
         val interceptorLayout: FrameLayout = object : FrameLayout(this) {
-
 
             private var millisecondBetweenTwoTap = 1000
             private var minDragValue = 100
@@ -190,14 +190,14 @@ class BubbleService : Service() {
             }
 
         }
-        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        if (inflater != null) {
-
-
 
             val composeView = ComposeView(this)
             composeView.setContent {
-                Container()
+                Bubble({
+
+                    println("qsdf")
+
+                })
             }
 
             // Trick The ComposeView into thinking we are tracking lifecycle
@@ -209,13 +209,9 @@ class BubbleService : Service() {
             ViewTreeViewModelStoreOwner.set(composeView) { viewModelStore }
             composeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
             floatyView = composeView
+            floatyView
             windowManager!!.addView(floatyView, params)
-        } else {
-            Log.e(
-                "SAW-example",
-                "Layout Inflater Service is null; can't inflate and display R.layout.floating_view"
-            )
-        }
+
     }
 
     //Close service

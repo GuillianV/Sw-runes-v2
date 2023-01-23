@@ -86,7 +86,7 @@ fun Modifier.innerShadow(
 }
 
 
-fun Modifier.outterShadow() = composed(
+fun Modifier.outterShadow(borderRadius : Dp) = composed(
     inspectorInfo = {
 
     },
@@ -123,7 +123,6 @@ fun Modifier.outterShadow() = composed(
                     2f,
                     shadowColor
                 )
-                val shadowRadius = borderRadiusSize.toPx()
 
 
 
@@ -131,7 +130,7 @@ fun Modifier.outterShadow() = composed(
                     left = 0f,
                     top = 0f,
                     right = this.size.width,
-                    bottom = this.size.height, borderRadiusSize.toPx(), borderRadiusSize.toPx(),
+                    bottom = this.size.height, borderRadius.toPx(), borderRadius.toPx(),
                     paint = paint
                 )
 
