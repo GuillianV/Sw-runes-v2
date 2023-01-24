@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/container"
+
+tools:ignore="Overdraw">
+
+<TextView
+    android:id="@+id/bubbleText"
+    android:layout_width="65dp"
+    android:layout_height="65dp"
+    android:elevation="11dp"
+    android:gravity="center"
+    android:textDirection="firstStrongRtl"
+    android:textIsSelectable="false"
+    android:textSize="8sp"
+    android:textStyle="bold"
+    android:visibility="invisible" />
+
+
+<androidx.cardview.widget.CardView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="500dp"
+    android:elevation="10dp">
+
+
+    <ImageView
+        android:id="@+id/bubbleImage"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:elevation="10dp"
+        android:src="@drawable/ic_launcher_foreground" />
+
+
+</androidx.cardview.widget.CardView>
+
+
+
+
+</FrameLayout>

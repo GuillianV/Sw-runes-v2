@@ -9,25 +9,29 @@ import android.graphics.PixelFormat
 import android.os.*
 import android.view.*
 import android.widget.FrameLayout
-import android.widget.LinearLayout
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
-import androidx.compose.ui.platform.ComposeView
+import androidx.core.os.bundleOf
+import androidx.core.os.persistableBundleOf
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
+import androidx.lifecycle.Observer
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.example.sw_runes.ui.Bubble
+import com.example.sw_runes.fragments.BubbleFragment
+import com.example.sw_runes.models.RecordingViewModel
 import java.util.*
 
 
-enum class TapStatus {
-   Tap,Drag,Nothing
-}
+
 
 class BubbleService : Service() {
     private var windowManager: WindowManager? = null
     private var floatyView: View? = null
+
+
 
 
     private lateinit var params :WindowManager.LayoutParams;
@@ -107,118 +111,19 @@ class BubbleService : Service() {
             mOrientationChangeCallback!!.enable()
         }
 
-        val interceptorLayout: FrameLayout = object : FrameLayout(this) {
+        var bubbleFragment = BubbleFragment()
 
-            private var millisecondBetweenTwoTap = 1000
-            private var minDragValue = 100
+        val viewModelStore = ViewModelStore()
+        val lifecycleOwner = MyLifecycleOwner()
+        lifecycleOwner.performRestore(null)
+        lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-
-            private var initialX = 0
-            private var initialY = 0
-            private var initialTouchX = 0f
-            private var initialTouchY = 0f
-            private var dragVale = 0
-            private  var startTime : Long = System.currentTimeMillis();
-
-
-            override fun onTouchEvent(event: MotionEvent?): Boolean {
-
-                if (event?.action == MotionEvent.ACTION_OUTSIDE)
-                    return super.onTouchEvent(event)
-
-                else{
-
-                    when (event!!.action) {
-                        MotionEvent.ACTION_DOWN -> {
-                            initialX = params.x
-                            initialY = params.y
-                            initialTouchX = event!!.rawX
-                            initialTouchY = event!!.rawY
-
-                        }
-                        MotionEvent.ACTION_UP -> {
-
-                            if (dragVale <=30){
-                                dragVale = 0
-                                var difference: Long = System.currentTimeMillis() - startTime
-                                if (difference >= 500){
-                                    interact(TapStatus.Tap)
-                                    startTime = System.currentTimeMillis();
-                                    /*bubbleImage.setImageResource(bubbleImageTapedIcon);
-                                    bubbleText.setText(bubbleTextTaped)*/
-
-                                    val handler = Handler()
-                                    handler.postDelayed({
-                                     /*   bubbleImage.setImageResource(bubbleImageBaseIcon);
-                                        bubbleText.setText(bubbleTextBase)*/
-
-                                    }, millisecondBetweenTwoTap.toLong())
-                                }
-
-
-
-                            }
-
-                            else{
-                                dragVale = 0
-                                interact(TapStatus.Drag)
-                            }
-
-
-                        }
-                        MotionEvent.ACTION_MOVE -> {
-                            params.x = initialX + (event!!.rawX - initialTouchX).toInt()
-                            params.y = initialY + (event!!.rawY - initialTouchY).toInt()
-                            dragVale = Math.abs((event!!.rawX - initialTouchX).toInt()) +Math.abs((event!!.rawY - initialTouchY).toInt())
-
-                            windowManager!!.updateViewLayout(floatyView, params)
-
-                        }
-
-                    }
-
-
-                    return true
-
-                }
-            }
-
-        }
-
-
-
-        val  fl = FrameLayout(this).apply {
-
-            val composeView = ComposeView(context)
-            composeView.apply {
-                parent
-            }
-            composeView.setContent {
-
-
-                Bubble({
-
-                    println("qsdf")
-
-                })
-
-
-
-            }
-            val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
-            // Trick The ComposeView into thinking we are tracking lifecycle
-            val viewModelStore = ViewModelStore()
-            val lifecycleOwner = MyLifecycleOwner()
-            lifecycleOwner.performRestore(null)
-            lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-            ViewTreeLifecycleOwner.set(composeView, lifecycleOwner)
-            ViewTreeViewModelStoreOwner.set(composeView) { viewModelStore }
-            composeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
-
-        }
-
-        floatyView = fl
+        floatyView = bubbleFragment.onCreateView(inflater,FrameLayout(this), bundleOf())
+        bubbleFragment.giveWindowParams(windowManager!!,params)
+        ViewTreeLifecycleOwner.set(floatyView!!, lifecycleOwner)
+        ViewTreeViewModelStoreOwner.set(floatyView!!) { viewModelStore }
+        floatyView!!.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
         windowManager!!.addView(floatyView, params)
     }
 
@@ -230,28 +135,6 @@ class BubbleService : Service() {
             floatyView = null
         }
     }
-
-    @SuppressLint("WrongConstant")
-    fun interact(status: TapStatus){
-        when (status) {
-            TapStatus.Drag -> {
-
-            }
-            TapStatus.Tap -> {
-
-              /*  val RTReturn = Intent(ScreenCaptureService.SCREENSHOT)
-                LocalBroadcastManager.getInstance(this).sendBroadcast(RTReturn)
-*/
-            }
-            else -> {
-
-            }
-
-        }
-
-    }
-
-
 
 
     internal class MyLifecycleOwner : SavedStateRegistryOwner {
