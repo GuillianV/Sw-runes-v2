@@ -3,7 +3,11 @@ package com.example.sw_runes.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.fragment.app.Fragment
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
@@ -12,6 +16,7 @@ import com.example.sw_runes.databinding.BubbleBinding
 import com.example.sw_runes.enums.TapStatus
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.example.sw_runes.ui.theme.black025
 
 class BubbleFragment : Fragment() {
 
@@ -32,16 +37,17 @@ class BubbleFragment : Fragment() {
         _binding = BubbleBinding.inflate(inflater,container,false)
         val view = binding.root
         binding.container.setOnTouchListener { view, motionEvent -> onTouchListener(view,motionEvent) }
-        binding.bubbleImage.setImageResource(R.drawable.rune_emplacement_one)
+
         return view
     }
 
+    fun getRootView () : View?{
+        return binding.root.rootView
+    }
 
 
     private var millisecondBetweenTwoTap = 1000
     private var minDragValue = 100
-
-
     private var initialX = 0
     private var initialY = 0
     private var initialTouchX = 0f
@@ -51,7 +57,7 @@ class BubbleFragment : Fragment() {
 
 
 
-    fun onTouchListener(view : View , motionEvent: MotionEvent): Boolean {
+    private fun onTouchListener(view : View , motionEvent: MotionEvent): Boolean {
 
 
         if (windowManager == null || windowManagerSettings == null)
@@ -68,6 +74,9 @@ class BubbleFragment : Fragment() {
                     initialY = windowManagerSettings!!.y
                     initialTouchX = motionEvent!!.rawX
                     initialTouchY = motionEvent!!.rawY
+
+
+
 
                 }
                 MotionEvent.ACTION_UP -> {
@@ -97,7 +106,9 @@ class BubbleFragment : Fragment() {
                     dragVale = Math.abs((motionEvent!!.rawX - initialTouchX).toInt()) +Math.abs((motionEvent!!.rawY - initialTouchY).toInt())
 
                     windowManager!!.updateViewLayout(binding.root, windowManagerSettings)
-
+                    if (dragVale >= 30){
+                        interact(TapStatus.Dragging)
+                    }
                 }
 
             }
@@ -115,24 +126,34 @@ class BubbleFragment : Fragment() {
     var windowManager: WindowManager? = null
     var windowManagerSettings : WindowManager.LayoutParams? = null;
 
-    fun giveWindowParams (_windowManager : WindowManager,_windowManagerSettings: WindowManager.LayoutParams ){
+    fun setWindowParams (_windowManager : WindowManager,_windowManagerSettings: WindowManager.LayoutParams ){
         windowManager = _windowManager
         windowManagerSettings = _windowManagerSettings
 
     }
 
+    private var mHandler: Handler   = Handler(Looper.getMainLooper())
+
     @SuppressLint("WrongConstant")
     private fun interact(status: TapStatus){
         when (status) {
+            TapStatus.Dragging -> {
+
+                binding.bubbleImage.rotation += 1
+
+            }
             TapStatus.DragEnd -> {
 
-                binding.bubbleImage.setImageResource(R.drawable.ic_launcher_foreground)
 
             }
             TapStatus.Tap -> {
 
-                binding.bubbleImage.setImageResource(R.drawable.rune_emplacement_one)
+                binding.bubbleImage.setColorFilter(black025.toArgb())
+                mHandler.postDelayed({
 
+                    binding.bubbleImage.setColorFilter(Color.Transparent.toArgb())
+
+                },500)
                 //  val RTReturn = Intent(ScreenCaptureService.SCREENSHOT)
                 //  LocalBroadcastManager.getInstance(this).sendBroadcast(RTReturn)
 

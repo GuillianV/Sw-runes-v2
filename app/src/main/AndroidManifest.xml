@@ -37,7 +37,7 @@
             android:stopWithTask="true"
             android:enabled="true"/>
         <service
-            android:name=".BubbleService"
+            android:name=".services.BubbleService"
             android:exported="false" />
 
     </application>

@@ -8,35 +8,25 @@ android:id="@+id/container"
 
 tools:ignore="Overdraw">
 
-<TextView
-    android:id="@+id/bubbleText"
-    android:layout_width="65dp"
-    android:layout_height="65dp"
-    android:elevation="11dp"
-    android:gravity="center"
-    android:textDirection="firstStrongRtl"
-    android:textIsSelectable="false"
-    android:textSize="8sp"
-    android:textStyle="bold"
-    android:visibility="invisible" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:padding="2dp"
+            android:layout_width="67dp"
+            android:layout_height="67dp"
+            android:id="@+id/bubbleImage"
+            android:src="@drawable/bubble_layout"
+            />
 
 
-<androidx.cardview.widget.CardView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    app:cardCornerRadius="500dp"
-    android:elevation="10dp">
 
 
-    <ImageView
-        android:id="@+id/bubbleImage"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:elevation="10dp"
-        android:src="@drawable/ic_launcher_foreground" />
+    </FrameLayout>
 
 
-</androidx.cardview.widget.CardView>
 
 
 

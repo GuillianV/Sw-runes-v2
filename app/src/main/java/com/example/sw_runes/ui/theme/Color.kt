@@ -16,3 +16,5 @@ val rarityMagic = Color(0xFF04BC54)
 val rarityRare = Color(0xFF5BE4FF)
 val rarityEpic = Color(0xFFB773C3)
 val rarityLegendary = Color(0xFFEFA74E)
+
+val black025 = Color.Black.copy(alpha = 0.25f)
