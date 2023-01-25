@@ -37,12 +37,20 @@ class ScreenCaptureService : Service() {
 
     private var displayWidth = Resources.getSystem().displayMetrics.widthPixels
     private var displayHeight =  Resources.getSystem().displayMetrics.heightPixels
-    var bitmapSaver : BitmapSaver = BitmapSaver()
+    private var bitmapSaver : BitmapSaver = BitmapSaver()
+    private var mOrientationChangeCallback: OrientationChangeCallback? = null
+
+
+    private var mMediaProjection: MediaProjection? = null
+    private var mImageReader: ImageReader? = null
+    private var mHandler: Handler? = null
+    private var mDisplay: Display? = null
+    private var mVirtualDisplay: VirtualDisplay? = null
+    private var mDensity = 0
 
 
     companion object {
 
-        val REQUEST_CODE_RECORDING = 10101
         private val TAG = "ScreenCaptureService"
         private val RESULT_CODE = "RESULT_CODE"
         private val DATA = "DATA"
@@ -50,20 +58,6 @@ class ScreenCaptureService : Service() {
         private val START = "START"
         private val STOP = "STOP"
         private val SCREENCAP_NAME = "screencap"
-
-        private var mMediaProjection: MediaProjection? = null
-
-        private var mImageReader: ImageReader? = null
-        private var mHandler: Handler? = null
-        private var mDisplay: Display? = null
-        private var mVirtualDisplay: VirtualDisplay? = null
-        private var mDensity = 0
-
-        private var mRotation = 0
-        val SCREENSHOT = "SCREENSHOT"
-
-        private var mOrientationChangeCallback: OrientationChangeCallback? = null
-
 
         fun getStartIntent(context: Context?, resultCode: Int, data: Intent?): Intent? {
             val intent = Intent(context, ScreenCaptureService::class.java)
