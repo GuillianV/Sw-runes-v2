@@ -12,11 +12,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Observer
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.example.sw_runes.models.RecordingViewModel
 import com.example.sw_runes.services.BubbleService
 import com.example.sw_runes.ui.theme.*
 import com.example.sw_runes.utils.Permissions.Companion.isManageOverlayGranted
 import com.example.sw_runes.utils.Permissions.Companion.isWriteExternalStorageGranted
+import com.example.sw_runes.workers.BubbleWorker
 
 class MainActivity : ComponentActivity() {
 
@@ -26,10 +31,15 @@ class MainActivity : ComponentActivity() {
     lateinit var bubbleIntent : Intent;
 
     private val recordingViewModel: RecordingViewModel by viewModels()
+    private val workManager = WorkManager.getInstance(this)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
+
 
         val windowInsetsController =
             WindowCompat.getInsetsController(window, window.decorView)
@@ -60,6 +70,30 @@ class MainActivity : ComponentActivity() {
 
         checkPermissions()
         startProjection()
+
+
+        val request = OneTimeWorkRequestBuilder<BubbleWorker>()
+            .addTag("hey")
+            .build()
+
+        workManager.enqueue(request)
+        workManager.getWorkInfosByTagLiveData("hey")
+            .observe(this, Observer { workInfos ->
+                if (workInfos != null) {
+                    for (workInfo in workInfos) {
+                        when (workInfo.state) {
+                            WorkInfo.State.SUCCEEDED -> {
+                                print(workInfo.outputData.getString("data"))
+                            }
+                            else -> {
+                                print("enque")
+                            }
+                        }
+                    }
+                }})
+
+
+
     }
 
 

@@ -20,14 +20,22 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.sw_runes.enums.TapStatus
 import com.example.sw_runes.fragments.BubbleFragment
 import com.example.sw_runes.models.RecordingViewModel
+import com.example.sw_runes.workers.BubbleWorker
 import java.util.*
 
 
 
 
 class BubbleService : Service() {
+
+
+
     private var windowManager: WindowManager? = null
     private lateinit var windowManagerParams :WindowManager.LayoutParams;
 
@@ -86,6 +94,9 @@ class BubbleService : Service() {
         bubbleFragment!!.setWindowParams(windowManager!!,windowManagerParams)
         windowManager!!.addView(bubbleFragment?.getRootView(), windowManagerParams)
 
+
+        bubbleFragment!!.onInteraction2 = { sendDataBubble() }
+
         var mOrientationChangeCallback = OrientationChangeCallback(this)
         if (mOrientationChangeCallback?.canDetectOrientation() == true) {
             mOrientationChangeCallback!!.enable()
@@ -126,5 +137,25 @@ class BubbleService : Service() {
         }
     }
 
+
+    private val workManager = WorkManager.getInstance(this)
+
+
+    fun sendDataBubble(): Boolean {
+
+
+        val data = Data.Builder()
+
+            .putString("data", "hello")
+            .build()
+
+        val request = OneTimeWorkRequestBuilder<BubbleWorker>()
+            .addTag("hey")
+            .setInputData(data)
+            .build()
+
+        workManager.enqueue(request)
+        return  true
+    }
 
 }

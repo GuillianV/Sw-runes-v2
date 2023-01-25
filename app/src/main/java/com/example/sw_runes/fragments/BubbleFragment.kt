@@ -9,14 +9,12 @@ import android.view.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.fragment.app.Fragment
-import androidx.work.WorkManager
-import androidx.work.WorkRequest
+import androidx.work.*
 import com.example.sw_runes.R
 import com.example.sw_runes.databinding.BubbleBinding
 import com.example.sw_runes.enums.TapStatus
-import androidx.work.Worker
-import androidx.work.WorkerParameters
 import com.example.sw_runes.ui.theme.black025
+import com.example.sw_runes.workers.BubbleWorker
 
 class BubbleFragment : Fragment() {
 
@@ -54,6 +52,9 @@ class BubbleFragment : Fragment() {
     private var initialTouchY = 0f
     private var dragVale = 0
     private  var startTime : Long = System.currentTimeMillis();
+
+    var onInteraction : (TapStatus) -> Boolean  = { false};
+    var onInteraction2 : () -> Boolean  = { false};
 
 
 
@@ -123,6 +124,7 @@ class BubbleFragment : Fragment() {
 
 
 
+
     var windowManager: WindowManager? = null
     var windowManagerSettings : WindowManager.LayoutParams? = null;
 
@@ -140,15 +142,17 @@ class BubbleFragment : Fragment() {
             TapStatus.Dragging -> {
 
                 binding.bubbleImage.rotation += 1
-
+                onInteraction(TapStatus.Dragging)
             }
             TapStatus.DragEnd -> {
 
-
+                onInteraction(TapStatus.DragEnd)
             }
             TapStatus.Tap -> {
 
                 binding.bubbleImage.setColorFilter(black025.toArgb())
+                onInteraction(TapStatus.Tap)
+                onInteraction2()
                 mHandler.postDelayed({
 
                     binding.bubbleImage.setColorFilter(Color.Transparent.toArgb())
@@ -161,7 +165,7 @@ class BubbleFragment : Fragment() {
 
             }
             else -> {
-
+                onInteraction(TapStatus.Nothing)
             }
 
         }
