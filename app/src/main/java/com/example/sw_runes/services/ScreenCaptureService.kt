@@ -27,6 +27,7 @@ import androidx.activity.viewModels
 import androidx.core.util.Pair
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
+import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -34,6 +35,7 @@ import com.example.sw_runes.enums.TapStatus
 import com.example.sw_runes.models.RecordingViewModel
 import com.example.sw_runes.utils.Notifications
 import com.example.sw_runes.workers.BubbleWorker
+import com.example.sw_runes.workers.RuneAnalyzerWorker
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -46,8 +48,7 @@ class ScreenCaptureService : LifecycleService() {
     private var displayWidth = Resources.getSystem().displayMetrics.widthPixels
     private var displayHeight =  Resources.getSystem().displayMetrics.heightPixels
     private var bitmapSaver : BitmapSaver = BitmapSaver()
-    private var mOrientationChangeCallback: OrientationChangeCallback? = null
-
+    private var baseOrientation : Int = 1;
 
     private var mMediaProjection: MediaProjection? = null
     private var mImageReader: ImageReader? = null
@@ -55,6 +56,8 @@ class ScreenCaptureService : LifecycleService() {
     private var mDisplay: Display? = null
     private var mVirtualDisplay: VirtualDisplay? = null
     private var mDensity = 0
+    private val workManager = WorkManager.getInstance(this)
+
 
 
     companion object {
@@ -89,11 +92,6 @@ class ScreenCaptureService : LifecycleService() {
         private fun isStopCommand(intent: Intent): Boolean {
             return intent.hasExtra(ACTION) && intent.getStringExtra(ACTION) == STOP
         }
-
-
-
-
-
     }
 
 
@@ -108,6 +106,8 @@ class ScreenCaptureService : LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
+
+        baseOrientation = getResources().getConfiguration().orientation
 
         // start capture handling thread
         object : Thread() {
@@ -145,8 +145,6 @@ class ScreenCaptureService : LifecycleService() {
         return START_NOT_STICKY
     }
 
-    private val workManager = WorkManager.getInstance(this)
-
 
     private fun startProjection(resultCode: Int, data: Intent) {
         val mpManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
@@ -161,12 +159,6 @@ class ScreenCaptureService : LifecycleService() {
 
                 // create virtual display depending on device width / height
                 createVirtualDisplay()
-
-                // register orientation change callback
-                mOrientationChangeCallback = OrientationChangeCallback(this)
-                if (mOrientationChangeCallback!!.canDetectOrientation()) {
-                    mOrientationChangeCallback!!.enable()
-                }
 
                 // register media projection stop callback
                 mMediaProjection!!.registerCallback(MediaProjectionStopCallback(), mHandler)
@@ -216,6 +208,7 @@ class ScreenCaptureService : LifecycleService() {
         displayHeight =  Resources.getSystem().displayMetrics.heightPixels
 
         mImageReader = ImageReader.newInstance(displayWidth, displayHeight, PixelFormat.RGBA_8888, 2)
+        mVirtualDisplay?.release()
         mVirtualDisplay = mMediaProjection!!.createVirtualDisplay(
             SCREENCAP_NAME, displayWidth, displayHeight,
             mDensity, DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC, mImageReader!!.getSurface(), null, mHandler
@@ -245,6 +238,10 @@ class ScreenCaptureService : LifecycleService() {
                                     }
 
 
+                                    bitmapSaver.pickedHandler = {
+                                        sendRuneAnalyzer(it)
+                                    }
+
                                     bitmapSaver.takePick()
                                 }
 
@@ -257,6 +254,24 @@ class ScreenCaptureService : LifecycleService() {
                     workManager.pruneWork()
                 }})
 
+    }
+
+    private val runeAnalyzerWorkManager = WorkManager.getInstance(this)
+
+    fun sendRuneAnalyzer(bitmapByteArray: ByteArray) {
+
+        val data = Data.Builder()
+            .putByteArray(RuneAnalyzerWorker.key,bitmapByteArray)
+            .build()
+        //TODO
+        val request = OneTimeWorkRequestBuilder<BubbleWorker>()
+            .addTag(RuneAnalyzerWorker.tag)
+            .setInputData(data)
+            .build()
+
+
+
+        runeAnalyzerWorkManager.enqueue(request)
     }
 
     //inner class
@@ -273,6 +288,8 @@ class ScreenCaptureService : LifecycleService() {
 
 
         private var takepick = false;
+
+        var pickedHandler : (ByteArray) -> Unit = {}
 
 
         inner class ImageAvailableListener : OnImageAvailableListener {
@@ -300,6 +317,7 @@ class ScreenCaptureService : LifecycleService() {
                     captureBitmap()
                     saveBitmap()
                     takepick = false
+                    getBitmapByteArray()?.let(pickedHandler)
 
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -396,35 +414,12 @@ class ScreenCaptureService : LifecycleService() {
         }
 
     }
-    var baseOrientation = Configuration.ORIENTATION_PORTRAIT
-
-    inner class OrientationChangeCallback internal constructor(context: Context?) :
-        OrientationEventListener(context) {
-
-
-        override fun onOrientationChanged(orientation: Int) {
-
-            var phoneOrientation =getResources().getConfiguration().orientation
-            if(phoneOrientation== Configuration.ORIENTATION_LANDSCAPE && baseOrientation != Configuration.ORIENTATION_LANDSCAPE ){
-                baseOrientation = Configuration.ORIENTATION_LANDSCAPE
-                changeOrientation(Configuration.ORIENTATION_LANDSCAPE)
-
-            }else if (phoneOrientation== Configuration.ORIENTATION_PORTRAIT && baseOrientation != Configuration.ORIENTATION_PORTRAIT){
-                baseOrientation = Configuration.ORIENTATION_PORTRAIT
-                changeOrientation(Configuration.ORIENTATION_PORTRAIT)
-
-            }
-
-
-        }
-    }
 
     inner class MediaProjectionStopCallback : MediaProjection.Callback() {
         override fun onStop() {
             mHandler!!.post {
                 mVirtualDisplay?.release()
                 mImageReader?.setOnImageAvailableListener(null, null)
-                mOrientationChangeCallback?.disable()
                 mMediaProjection!!.unregisterCallback(this@MediaProjectionStopCallback)
                 mMediaProjection = null
             }
