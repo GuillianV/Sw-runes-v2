@@ -75,8 +75,9 @@ class MainActivity : ComponentActivity() {
         if ( isManageOverlayGranted(this, applicationContext) && isWriteExternalStorageGranted(this, applicationContext)) {
 
             // Launch service right away - the user has already previously granted permission
-            startBubbleService()
             startProjection()
+            startBubbleService()
+
         } else {
 
             // Check that the user has granted permission, and prompt them if not

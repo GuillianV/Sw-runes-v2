@@ -23,6 +23,7 @@ import android.util.Log
 import android.view.Display
 import android.view.OrientationEventListener
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.core.util.Pair
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
@@ -30,6 +31,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.sw_runes.enums.TapStatus
+import com.example.sw_runes.models.RecordingViewModel
 import com.example.sw_runes.utils.Notifications
 import com.example.sw_runes.workers.BubbleWorker
 import java.io.ByteArrayOutputStream
@@ -102,6 +104,7 @@ class ScreenCaptureService : LifecycleService() {
         super.onBind(intent)
         return null
     }
+
 
     override fun onCreate() {
         super.onCreate()
@@ -189,6 +192,23 @@ class ScreenCaptureService : LifecycleService() {
         }
     }
 
+    private  fun changeOrientation(orientation: Int){
+
+       var baseOrientation = orientation
+
+        try {
+            // clean up
+            mVirtualDisplay?.release()
+            mImageReader?.setOnImageAvailableListener(null, null)
+
+            // re-create virtual display depending on device width / height
+            createVirtualDisplay()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
     @SuppressLint("WrongConstant")
     private fun createVirtualDisplay() {
         // start capture reader
@@ -218,8 +238,14 @@ class ScreenCaptureService : LifecycleService() {
 
                                 var tapStatus = workInfo.outputData.getString(BubbleWorker.key)
                                 if (tapStatus == TapStatus.Tap){
-                                    bitmapSaver.captureBitmap()
-                                    bitmapSaver.saveBitmap()
+                                    var actualOrientation = getResources().getConfiguration().orientation
+                                    if (baseOrientation != actualOrientation){
+                                        baseOrientation = actualOrientation
+                                        changeOrientation(actualOrientation)
+                                    }
+
+
+                                    bitmapSaver.takePick()
                                 }
 
                             }
@@ -246,6 +272,7 @@ class ScreenCaptureService : LifecycleService() {
         private var mStoreDir: String? = null
 
 
+        private var takepick = false;
 
 
         inner class ImageAvailableListener : OnImageAvailableListener {
@@ -254,8 +281,9 @@ class ScreenCaptureService : LifecycleService() {
             var planes = arrayOf<Image.Plane>()
 
             override fun onImageAvailable(reader: ImageReader) {
-
                 try {
+
+
                     mImageReader!!.acquireLatestImage().use { image ->
                         if (image != null) {
                             planes = image.planes
@@ -265,6 +293,14 @@ class ScreenCaptureService : LifecycleService() {
                         }
                     }
 
+
+                    if (!takepick)
+                        return
+
+                    captureBitmap()
+                    saveBitmap()
+                    takepick = false
+
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -272,7 +308,7 @@ class ScreenCaptureService : LifecycleService() {
             }
         }
 
-        fun captureBitmap(){
+        private fun captureBitmap(){
             if (rowPadding != 0 && pixelStride != 0 && displayWidth != 0 && displayHeight != 0){
                 try {
 
@@ -293,7 +329,7 @@ class ScreenCaptureService : LifecycleService() {
 
         }
 
-        fun saveBitmap(){
+        private fun saveBitmap(){
 
             if (bitmapByteArray == null)
                 return
@@ -321,6 +357,12 @@ class ScreenCaptureService : LifecycleService() {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, fileOutputStream)
             fileOutputStream.close()
             bitmap?.recycle()
+
+        }
+
+        fun takePick(){
+            if (!takepick)
+                takepick = true;
 
         }
 
@@ -354,42 +396,22 @@ class ScreenCaptureService : LifecycleService() {
         }
 
     }
+    var baseOrientation = Configuration.ORIENTATION_PORTRAIT
 
     inner class OrientationChangeCallback internal constructor(context: Context?) :
         OrientationEventListener(context) {
 
-        var baseOrientation = Configuration.ORIENTATION_PORTRAIT
 
         override fun onOrientationChanged(orientation: Int) {
 
             var phoneOrientation =getResources().getConfiguration().orientation
             if(phoneOrientation== Configuration.ORIENTATION_LANDSCAPE && baseOrientation != Configuration.ORIENTATION_LANDSCAPE ){
                 baseOrientation = Configuration.ORIENTATION_LANDSCAPE
-
-                try {
-                    // clean up
-                    mVirtualDisplay?.release()
-                    mImageReader?.setOnImageAvailableListener(null, null)
-
-                    // re-create virtual display depending on device width / height
-                    createVirtualDisplay()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+                changeOrientation(Configuration.ORIENTATION_LANDSCAPE)
 
             }else if (phoneOrientation== Configuration.ORIENTATION_PORTRAIT && baseOrientation != Configuration.ORIENTATION_PORTRAIT){
                 baseOrientation = Configuration.ORIENTATION_PORTRAIT
-
-                try {
-                    // clean up
-                    mVirtualDisplay?.release()
-                    mImageReader?.setOnImageAvailableListener(null, null)
-
-                    // re-create virtual display depending on device width / height
-                    createVirtualDisplay()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+                changeOrientation(Configuration.ORIENTATION_PORTRAIT)
 
             }
 
