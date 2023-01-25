@@ -31,7 +31,7 @@
         </activity>
 
         <service
-            android:name=".ScreenCaptureService"
+            android:name=".services.ScreenCaptureService"
             android:foregroundServiceType="mediaProjection"
             android:exported="false"
             android:stopWithTask="true"

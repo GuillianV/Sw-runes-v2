@@ -1,10 +1,12 @@
 package com.example.sw_runes
 
+import android.app.Activity
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +20,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.sw_runes.models.RecordingViewModel
 import com.example.sw_runes.services.BubbleService
+import com.example.sw_runes.services.ScreenCaptureService
 import com.example.sw_runes.ui.theme.*
 import com.example.sw_runes.utils.Permissions.Companion.isManageOverlayGranted
 import com.example.sw_runes.utils.Permissions.Companion.isWriteExternalStorageGranted
@@ -69,7 +72,6 @@ class MainActivity : ComponentActivity() {
         recordingViewModel.startRecoding.value = true;
 
         checkPermissions()
-        startProjection()
 
 
         val request = OneTimeWorkRequestBuilder<BubbleWorker>()
@@ -102,6 +104,7 @@ class MainActivity : ComponentActivity() {
 
             // Launch service right away - the user has already previously granted permission
             launchBubbleService()
+            startProjection()
         } else {
             checkPermissions()
             // Check that the user has granted permission, and prompt them if not
@@ -124,14 +127,25 @@ class MainActivity : ComponentActivity() {
         val mProjectionManager =
             getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
 
-        startActivity(mProjectionManager.createScreenCaptureIntent(),)
-  /*      startActivityForResult(
-            mProjectionManager.createScreenCaptureIntent(),
-            ScreenCaptureService.REQUEST_CODE_RECORDING
-        )*/
+
+        var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // There are no request codes
+                val data: Intent? = result.data
+                startService(
+                    ScreenCaptureService.getStartIntent(
+                        this,
+                        result.resultCode,
+                        data
+                    )
+                )
+            }
+        }
+
+        resultLauncher.launch(mProjectionManager.createScreenCaptureIntent())
     }
     private fun stopProjection() {
-       // startService(ScreenCaptureService.getStopIntent(this))
+       startService(ScreenCaptureService.getStopIntent(this))
     }
 
     private fun launchBubbleService() {

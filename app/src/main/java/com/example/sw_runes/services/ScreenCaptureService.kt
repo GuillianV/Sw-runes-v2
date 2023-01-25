@@ -1,13 +1,11 @@
 package com.example.sw_runes.services
-/*
+
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Notification
 import android.app.Service
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -25,34 +23,22 @@ import android.util.Log
 import android.view.Display
 import android.view.OrientationEventListener
 import android.view.WindowManager
-import androidx.annotation.RequiresApi
 import androidx.core.util.Pair
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.sw_runes.utils.Notifications
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.Buffer
-import java.text.SimpleDateFormat
 import java.util.*
 
 
 class ScreenCaptureService : Service() {
 
-    var bManager: LocalBroadcastManager? = null
+    private var displayWidth = Resources.getSystem().displayMetrics.widthPixels
+    private var displayHeight =  Resources.getSystem().displayMetrics.heightPixels
+    var bitmapSaver : BitmapSaver = BitmapSaver()
 
-    var planes = arrayOf<Image.Plane>()
-    lateinit var buffer : Buffer
-    var pixelStride : Int = 0
-    var rowStride : Int = 0
-    var rowPadding: Int = 0
-
-    var lastBitmap : Bitmap? = null
-    var bitmap: Bitmap? = null
-
-    var folderDir : String = "/DCIM/SWrunesStorage/"
-    var preBitmapText : String = "swrunes_"
 
     companion object {
 
@@ -66,14 +52,13 @@ class ScreenCaptureService : Service() {
         private val SCREENCAP_NAME = "screencap"
 
         private var mMediaProjection: MediaProjection? = null
-        private var mStoreDir: String? = null
+
         private var mImageReader: ImageReader? = null
         private var mHandler: Handler? = null
         private var mDisplay: Display? = null
         private var mVirtualDisplay: VirtualDisplay? = null
         private var mDensity = 0
-        private var mWidth = 0
-        private var mHeight = 0
+
         private var mRotation = 0
         val SCREENSHOT = "SCREENSHOT"
 
@@ -104,9 +89,7 @@ class ScreenCaptureService : Service() {
             return intent.hasExtra(ACTION) && intent.getStringExtra(ACTION) == STOP
         }
 
-        private fun getVirtualDisplayFlags(): Int {
-            return DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC
-        }
+
 
 
 
@@ -117,50 +100,11 @@ class ScreenCaptureService : Service() {
 
 
     override fun onBind(p0: Intent?): IBinder? {
-        TODO("Not yet implemented")
-    }
-
-    private fun dirSize(dir: File): Int {
-        if (dir.exists()) {
-            var result: Int = 0
-            val fileList = dir.listFiles()
-            if (fileList != null) {
-                result = fileList.size
-            }
-            return result // return the file size
-        }
-        return 0
+        return null
     }
 
     override fun onCreate() {
         super.onCreate()
-
-        bManager = LocalBroadcastManager.getInstance(this)
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(MainActivity.SCREENSHOT)
-        bManager!!.registerReceiver(bReceiver, intentFilter)
-
-        // create store dir
-        val externalFilesDir = getExternalFilesDir(null)
-        if (externalFilesDir != null) {
-            mStoreDir =
-                Environment.getExternalStorageDirectory().absolutePath.toString() + folderDir
-            val storeDirectory: File = File(mStoreDir)
-            if (!storeDirectory.exists()) {
-                val success = storeDirectory.mkdirs()
-                if (!success) {
-                    Log.e(ScreenCaptureService.TAG, "failed to create file storage directory.")
-                    stopSelf()
-                }
-            }
-
-        } else {
-            Log.e(
-                ScreenCaptureService.TAG,
-                "failed to create file storage directory, getExternalFilesDir is null."
-            )
-            stopSelf()
-        }
 
         // start capture handling thread
         object : Thread() {
@@ -195,83 +139,182 @@ class ScreenCaptureService : Service() {
         return START_NOT_STICKY
     }
 
-    inner class ImageAvailableListener : OnImageAvailableListener {
-        override fun onImageAvailable(reader: ImageReader) {
+    private fun startProjection(resultCode: Int, data: Intent) {
+        val mpManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        if (mMediaProjection == null) {
+
+            mMediaProjection = mpManager.getMediaProjection(resultCode,data)
+            if (mMediaProjection != null) {
+                // display metrics
+                mDensity = Resources.getSystem().displayMetrics.densityDpi
+                val windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+                mDisplay = windowManager.defaultDisplay
+
+                // create virtual display depending on device width / height
+                createVirtualDisplay()
+
+                // register orientation change callback
+                mOrientationChangeCallback = OrientationChangeCallback(this)
+                if (mOrientationChangeCallback!!.canDetectOrientation()) {
+                    mOrientationChangeCallback!!.enable()
+                }
+
+                // register media projection stop callback
+                mMediaProjection!!.registerCallback(MediaProjectionStopCallback(), mHandler)
+            }
+        }
+    }
+
+
+    private fun stopProjection() {
+        if (mHandler != null) {
+            mHandler!!.post {
+                mMediaProjection?.stop()
+            }
+        }
+    }
+
+    @SuppressLint("WrongConstant")
+    private fun createVirtualDisplay() {
+        // start capture reader
+        displayWidth = Resources.getSystem().displayMetrics.widthPixels
+        displayHeight =  Resources.getSystem().displayMetrics.heightPixels
+
+        mImageReader = ImageReader.newInstance(displayWidth, displayHeight, PixelFormat.RGBA_8888, 2)
+        mVirtualDisplay = mMediaProjection!!.createVirtualDisplay(
+            SCREENCAP_NAME, displayWidth, displayHeight,
+            mDensity, DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC, mImageReader!!.getSurface(), null, mHandler
+        )
+        mImageReader!!.setOnImageAvailableListener(bitmapSaver.ImageAvailableListener(), mHandler)
+    }
+
+
+    //inner class
+    inner class BitmapSaver {
+
+        private   lateinit var buffer : Buffer
+        private  var pixelStride : Int = 0
+        private  var rowPadding: Int = 0
+        private  var bitmapByteArray : ByteArray? = null
+
+        private  var folderDir : String = "/DCIM/SWrunesStorage/"
+        private var preBitmapText : String = "sw_"
+        private var mStoreDir: String? = null
+
+
+
+
+        inner class ImageAvailableListener : OnImageAvailableListener {
+
+
+            var planes = arrayOf<Image.Plane>()
+
+            override fun onImageAvailable(reader: ImageReader) {
 
                 try {
                     mImageReader!!.acquireLatestImage().use { image ->
                         if (image != null) {
-                             planes = image.planes
-                             buffer = planes[0].buffer
-                             pixelStride = planes[0].pixelStride
-                             rowStride = planes[0].rowStride
-                             rowPadding = rowStride - pixelStride * mWidth
+                            planes = image.planes
+                            buffer = planes[0].buffer
+                            pixelStride = planes[0].pixelStride
+                            rowPadding = planes[0].rowStride - pixelStride * displayWidth
                         }
                     }
+
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
 
-        }
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun saveBitmap(){
-
-        if (rowPadding != 0 && pixelStride != 0 && mWidth != 0 && mHeight != 0){
-            try {
-                bitmap = Bitmap.createBitmap(
-                    mWidth + rowPadding / pixelStride,
-                    mHeight,
-                    Bitmap.Config.ARGB_8888
-                )
-                bitmap!!.copyPixelsFromBuffer(buffer)
-
-                /*
-                var fos: FileOutputStream? = null
-                // write bitmap to a file
-                val sdf = SimpleDateFormat("mm-ss")
-                val currentDate = sdf.format(Date())
-
-                var size : Int =  dirSize( File(mStoreDir))
-
-                fos =
-                    FileOutputStream(mStoreDir +"/"+ preBitmapText + size+"_"+currentDate + ".png")
-
-
-                bitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-                */
-
-                val byteArray: ByteArray = bitmap!!.toByteArray()
-                bitmap!!.recycle()
-            /*    var myData = Intent(this, PopupService::class.java)
-                myData.putExtra("byteArray",byteArray)
-
-                stopService(Intent(this, PopupService::class.java))
-                startService(myData)*/
-
-
-                lastBitmap = bitmap
-                /*if (fos != null) {
-                    fos!!.close()
-                    if (bitmap != null) {
-                        bitmap!!.recycle()
-                    }
-                }*/
-            } catch (ioe: IOException) {
-                ioe.printStackTrace()
             }
         }
 
+        fun captureBitmap(){
+            if (rowPadding != 0 && pixelStride != 0 && displayWidth != 0 && displayHeight != 0){
+                try {
 
 
+                    var bitmap: Bitmap = Bitmap.createBitmap(
+                        displayWidth + rowPadding / pixelStride,
+                        displayHeight,
+                        Bitmap.Config.ARGB_8888
+                    )
+                    bitmap.copyPixelsFromBuffer(buffer)
+
+                    bitmapByteArray = bitmap.toByteArray()
+                    bitmap.recycle()
+                } catch (ioe: IOException) {
+                    ioe.printStackTrace()
+                }
+            }
+
+        }
+
+        fun saveBitmap(){
+
+            if (bitmapByteArray == null)
+                return
 
 
+            val externalFilesDir = getExternalFilesDir(null)
+            if (externalFilesDir != null) {
+                mStoreDir =
+                    Environment.getExternalStorageDirectory().absolutePath.toString() + folderDir
+                val storeDirectory: File = File(mStoreDir)
+                if (!storeDirectory.exists()) {
+                    val success = storeDirectory.mkdirs()
+                    if (!success) {
+                        stopSelf()
+                        throw Exception("failed to create file storage directory.")
+                    }
+                }
+
+            }
+
+
+            val bitmap = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
+            val size : Int =  dirSize( File(mStoreDir))
+            var fileOutputStream: FileOutputStream? =   FileOutputStream(mStoreDir +"/"+ preBitmapText + size + ".png")
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, fileOutputStream)
+
+
+            if (fileOutputStream != null) {
+                fileOutputStream!!.close()
+                if (bitmap != null) {
+                    bitmap!!.recycle()
+                }
+            }
+        }
+
+        fun getBitmap():Bitmap?{
+           return bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
+
+        }
+
+        fun getBitmapByteArray(): ByteArray? {
+            return bitmapByteArray;
+        }
+
+
+        private fun Bitmap.toByteArray():ByteArray{
+            ByteArrayOutputStream().apply {
+                compress(Bitmap.CompressFormat.JPEG,50,this)
+                return toByteArray()
+            }
+        }
+
+        private fun dirSize(dir: File): Int {
+            if (dir.exists()) {
+                var result: Int = 0
+                val fileList = dir.listFiles()
+                if (fileList != null) {
+                    result = fileList.size
+                }
+                return result // return the file size
+            }
+            return 0
+        }
 
     }
-
-
 
     inner class OrientationChangeCallback internal constructor(context: Context?) :
         OrientationEventListener(context) {
@@ -330,75 +373,6 @@ class ScreenCaptureService : Service() {
         }
     }
 
-    private fun startProjection(resultCode: Int, data: Intent) {
-        val mpManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        if (mMediaProjection == null) {
-
-            mMediaProjection = mpManager.getMediaProjection(resultCode,data)
-            if (mMediaProjection != null) {
-                // display metrics
-                mDensity = Resources.getSystem().displayMetrics.densityDpi
-                val windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-                mDisplay = windowManager.defaultDisplay
-
-                // create virtual display depending on device width / height
-                createVirtualDisplay()
-
-                // register orientation change callback
-                mOrientationChangeCallback = OrientationChangeCallback(this)
-                if (mOrientationChangeCallback!!.canDetectOrientation()) {
-                    mOrientationChangeCallback!!.enable()
-                }
-
-                // register media projection stop callback
-                mMediaProjection!!.registerCallback(MediaProjectionStopCallback(), mHandler)
-            }
-        }
-    }
-
-    fun Bitmap.toByteArray():ByteArray{
-        ByteArrayOutputStream().apply {
-            compress(Bitmap.CompressFormat.JPEG,50,this)
-            return toByteArray()
-        }
-    }
-
-    private fun stopProjection() {
-        if (mHandler != null) {
-            mHandler!!.post {
-                mMediaProjection?.stop()
-            }
-        }
-    }
-
-    @SuppressLint("WrongConstant")
-    private fun createVirtualDisplay() {
-        // get width and height
-        mWidth = Resources.getSystem().displayMetrics.widthPixels
-        mHeight = Resources.getSystem().displayMetrics.heightPixels
-
-        // start capture reader
-        mImageReader = ImageReader.newInstance(mWidth, mHeight, PixelFormat.RGBA_8888, 2)
-        mVirtualDisplay = mMediaProjection!!.createVirtualDisplay(
-            SCREENCAP_NAME, mWidth, mHeight,
-            mDensity, getVirtualDisplayFlags(), mImageReader!!.getSurface(), null, mHandler
-        )
-        mImageReader!!.setOnImageAvailableListener(ImageAvailableListener(), mHandler)
-    }
 
 
-    private val bReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        @RequiresApi(Build.VERSION_CODES.O)
-        override fun onReceive(context: Context, intent: Intent) {
-
-            if (intent.action == ScreenCaptureService.SCREENSHOT) {
-                    saveBitmap()
-            }
-
-
-        }
-    }
-
-
-
-}*/
+}
