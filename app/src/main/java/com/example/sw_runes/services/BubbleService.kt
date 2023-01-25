@@ -59,7 +59,7 @@ class BubbleService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         if (bubbleFragment?.getRootView() != null) {
-            windowManager!!.removeView(bubbleFragment!!.view)
+            windowManager!!.removeView(bubbleFragment!!.getRootView())
             bubbleFragment = null
         }
     }
@@ -95,7 +95,7 @@ class BubbleService : Service() {
         windowManager!!.addView(bubbleFragment?.getRootView(), windowManagerParams)
 
 
-        bubbleFragment!!.onInteraction2 = { sendDataBubble() }
+        bubbleFragment!!.onInteraction =  { tap -> sendDataBubble(tap) }
 
         var mOrientationChangeCallback = OrientationChangeCallback(this)
         if (mOrientationChangeCallback?.canDetectOrientation() == true) {
@@ -140,17 +140,19 @@ class BubbleService : Service() {
 
     private val workManager = WorkManager.getInstance(this)
 
+    fun sendDataBubble(tapStatus: String): Boolean {
 
-    fun sendDataBubble(): Boolean {
+        if (tapStatus == TapStatus.Dragging)
+            return false
 
 
         val data = Data.Builder()
 
-            .putString("data", "hello")
+            .putString(BubbleWorker.key,tapStatus)
             .build()
 
         val request = OneTimeWorkRequestBuilder<BubbleWorker>()
-            .addTag("hey")
+            .addTag(BubbleWorker.tag)
             .setInputData(data)
             .build()
 

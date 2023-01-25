@@ -1,6 +1,12 @@
 package com.example.sw_runes.enums
 
 
-enum class TapStatus {
-    Tap,DragEnd,Dragging,Nothing
+class TapStatus {
+    companion object {
+        val Tap = "tap";
+        val DragEnd = "drag_end";
+        val Dragging= "dragging";
+        val Nothing = "nothing"
+    }
+
 }

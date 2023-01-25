@@ -53,8 +53,7 @@ class BubbleFragment : Fragment() {
     private var dragVale = 0
     private  var startTime : Long = System.currentTimeMillis();
 
-    var onInteraction : (TapStatus) -> Boolean  = { false};
-    var onInteraction2 : () -> Boolean  = { false};
+    var onInteraction : (String) -> Boolean  = { false};
 
 
 
@@ -137,7 +136,7 @@ class BubbleFragment : Fragment() {
     private var mHandler: Handler   = Handler(Looper.getMainLooper())
 
     @SuppressLint("WrongConstant")
-    private fun interact(status: TapStatus){
+    private fun interact(status: String){
         when (status) {
             TapStatus.Dragging -> {
 
@@ -152,7 +151,6 @@ class BubbleFragment : Fragment() {
 
                 binding.bubbleImage.setColorFilter(black025.toArgb())
                 onInteraction(TapStatus.Tap)
-                onInteraction2()
                 mHandler.postDelayed({
 
                     binding.bubbleImage.setColorFilter(Color.Transparent.toArgb())

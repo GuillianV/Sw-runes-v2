@@ -34,15 +34,10 @@ class MainActivity : ComponentActivity() {
     lateinit var bubbleIntent : Intent;
 
     private val recordingViewModel: RecordingViewModel by viewModels()
-    private val workManager = WorkManager.getInstance(this)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
-
-
 
         val windowInsetsController =
             WindowCompat.getInsetsController(window, window.decorView)
@@ -73,29 +68,6 @@ class MainActivity : ComponentActivity() {
 
         checkPermissions()
 
-
-        val request = OneTimeWorkRequestBuilder<BubbleWorker>()
-            .addTag("hey")
-            .build()
-
-        workManager.enqueue(request)
-        workManager.getWorkInfosByTagLiveData("hey")
-            .observe(this, Observer { workInfos ->
-                if (workInfos != null) {
-                    for (workInfo in workInfos) {
-                        when (workInfo.state) {
-                            WorkInfo.State.SUCCEEDED -> {
-                                print(workInfo.outputData.getString("data"))
-                            }
-                            else -> {
-                                print("enque")
-                            }
-                        }
-                    }
-                }})
-
-
-
     }
 
 
@@ -103,10 +75,10 @@ class MainActivity : ComponentActivity() {
         if ( isManageOverlayGranted(this, applicationContext) && isWriteExternalStorageGranted(this, applicationContext)) {
 
             // Launch service right away - the user has already previously granted permission
-            launchBubbleService()
+            startBubbleService()
             startProjection()
         } else {
-            checkPermissions()
+
             // Check that the user has granted permission, and prompt them if not
 
         }
@@ -114,13 +86,11 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
 
-
     }
     override fun onDestroy() {
 
-       // stopService(bubbleIntent)
-      //  val intent = Intent(this, ScreenCaptureService::class.java)
         stopProjection()
+        stopBubbleService()
         super.onDestroy()
     }
     fun startProjection() {
@@ -145,13 +115,17 @@ class MainActivity : ComponentActivity() {
         resultLauncher.launch(mProjectionManager.createScreenCaptureIntent())
     }
     private fun stopProjection() {
-       startService(ScreenCaptureService.getStopIntent(this))
+       stopService(ScreenCaptureService.getStopIntent(this))
     }
 
-    private fun launchBubbleService() {
+    private fun startBubbleService() {
+        bubbleIntent = Intent(this, BubbleService::class.java)
+        startService(bubbleIntent)
+
+    }
+    private fun stopBubbleService() {
         bubbleIntent = Intent(this, BubbleService::class.java)
         stopService(bubbleIntent)
-        startService(bubbleIntent)
 
     }
 

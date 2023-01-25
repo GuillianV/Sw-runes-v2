@@ -24,16 +24,22 @@ import android.view.Display
 import android.view.OrientationEventListener
 import android.view.WindowManager
 import androidx.core.util.Pair
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.Observer
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import com.example.sw_runes.enums.TapStatus
 import com.example.sw_runes.utils.Notifications
+import com.example.sw_runes.workers.BubbleWorker
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.Buffer
-import java.util.*
 
 
-class ScreenCaptureService : Service() {
+class ScreenCaptureService : LifecycleService() {
 
     private var displayWidth = Resources.getSystem().displayMetrics.widthPixels
     private var displayHeight =  Resources.getSystem().displayMetrics.heightPixels
@@ -51,7 +57,6 @@ class ScreenCaptureService : Service() {
 
     companion object {
 
-        private val TAG = "ScreenCaptureService"
         private val RESULT_CODE = "RESULT_CODE"
         private val DATA = "DATA"
         private val ACTION = "ACTION"
@@ -70,7 +75,7 @@ class ScreenCaptureService : Service() {
 
         fun getStopIntent(context: Context?): Intent? {
             val intent = Intent(context, ScreenCaptureService::class.java)
-            intent.putExtra(ScreenCaptureService.ACTION, ScreenCaptureService.STOP)
+            intent.putExtra(ACTION, STOP)
             return intent
         }
 
@@ -93,7 +98,8 @@ class ScreenCaptureService : Service() {
 
 
 
-    override fun onBind(p0: Intent?): IBinder? {
+    override fun onBind(intent: Intent): IBinder? {
+        super.onBind(intent)
         return null
     }
 
@@ -104,21 +110,24 @@ class ScreenCaptureService : Service() {
         object : Thread() {
             override fun run() {
                 Looper.prepare()
-                mHandler = Handler()
+                mHandler = Handler(Looper.getMainLooper())
                 Looper.loop()
             }
         }.start()
     }
 
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        if (isStartCommand(intent)) {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
+        if (intent == null)
+            stopSelf()
+
+        if (isStartCommand(intent!!)) {
             // create notification
             val notification: Pair<Int, Notification> = Notifications.getNotification(this)
             startForeground(notification.first!!, notification.second)
             // start projection
-            val resultCode =
-                intent.getIntExtra(RESULT_CODE, Activity.RESULT_CANCELED)
+            val resultCode = intent.getIntExtra(RESULT_CODE, Activity.RESULT_CANCELED)
             val data = intent.getParcelableExtra<Intent>(DATA)
             if (data != null) {
                 startProjection(resultCode, data)
@@ -132,6 +141,9 @@ class ScreenCaptureService : Service() {
         }
         return START_NOT_STICKY
     }
+
+    private val workManager = WorkManager.getInstance(this)
+
 
     private fun startProjection(resultCode: Int, data: Intent) {
         val mpManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
@@ -155,8 +167,17 @@ class ScreenCaptureService : Service() {
 
                 // register media projection stop callback
                 mMediaProjection!!.registerCallback(MediaProjectionStopCallback(), mHandler)
+
+                listenBubbleWorker()
+
             }
         }
+    }
+
+    override fun onDestroy() {
+        stopProjection()
+        stopSelf()
+        super.onDestroy()
     }
 
 
@@ -182,6 +203,35 @@ class ScreenCaptureService : Service() {
         mImageReader!!.setOnImageAvailableListener(bitmapSaver.ImageAvailableListener(), mHandler)
     }
 
+    private fun listenBubbleWorker(){
+        val request = OneTimeWorkRequestBuilder<BubbleWorker>()
+            .addTag(BubbleWorker.tag)
+            .build()
+
+        workManager.enqueue(request)
+        workManager.getWorkInfosByTagLiveData(BubbleWorker.tag)
+            .observe(this, Observer { workInfos ->
+                if (workInfos != null) {
+                    for (workInfo in workInfos) {
+                        when (workInfo.state) {
+                            WorkInfo.State.SUCCEEDED -> {
+
+                                var tapStatus = workInfo.outputData.getString(BubbleWorker.key)
+                                if (tapStatus == TapStatus.Tap){
+                                    bitmapSaver.captureBitmap()
+                                    bitmapSaver.saveBitmap()
+                                }
+
+                            }
+                            else -> {
+                                print("enque")
+                            }
+                        }
+                    }
+                    workManager.pruneWork()
+                }})
+
+    }
 
     //inner class
     inner class BitmapSaver {
@@ -267,16 +317,11 @@ class ScreenCaptureService : Service() {
 
             val bitmap = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
             val size : Int =  dirSize( File(mStoreDir))
-            var fileOutputStream: FileOutputStream? =   FileOutputStream(mStoreDir +"/"+ preBitmapText + size + ".png")
+            var fileOutputStream: FileOutputStream =   FileOutputStream(mStoreDir +"/"+ preBitmapText + size + ".png")
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, fileOutputStream)
+            fileOutputStream.close()
+            bitmap?.recycle()
 
-
-            if (fileOutputStream != null) {
-                fileOutputStream!!.close()
-                if (bitmap != null) {
-                    bitmap!!.recycle()
-                }
-            }
         }
 
         fun getBitmap():Bitmap?{
@@ -354,7 +399,6 @@ class ScreenCaptureService : Service() {
 
     inner class MediaProjectionStopCallback : MediaProjection.Callback() {
         override fun onStop() {
-            Log.e(TAG, "stopping projection.")
             mHandler!!.post {
                 mVirtualDisplay?.release()
                 mImageReader?.setOnImageAvailableListener(null, null)
