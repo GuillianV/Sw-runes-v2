@@ -1,9 +1,9 @@
-package com.example.myapplication.sw.rune.stats.sub
+package com.example.sw_runes.sw.rune.stats.sub
 
-import com.example.myapplication.sw.rune.RuneLevel
-import com.example.myapplication.sw.rune.RuneStar
-import com.example.myapplication.sw.rune.emplacement.*
-import com.example.myapplication.sw.rune.stats.primary.PrimaryStat
+import com.example.sw_runes.sw.rune.RuneLevel
+import com.example.sw_runes.sw.rune.RuneStar
+import com.example.sw_runes.sw.rune.emplacement.*
+import com.example.sw_runes.sw.rune.stats.primary.PrimaryStat
 
 class SubAttackFlat: SubStat() {
 

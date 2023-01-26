@@ -1,6 +1,6 @@
-package com.example.myapplication.sw.rune.stats.primary
+package com.example.sw_runes.sw.rune.stats.primary
 
-import com.example.myapplication.sw.rune.RuneStar
+import com.example.sw_runes.sw.rune.RuneStar
 
 class AttackPercent: PrimaryStat() {
 

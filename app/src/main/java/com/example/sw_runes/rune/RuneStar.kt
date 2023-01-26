@@ -1,6 +1,6 @@
-package com.example.myapplication.sw.rune
+package com.example.sw_runes.sw.rune
 
-import com.example.myapplication.R
+import com.example.sw_runes.R
 
 class RuneStar(star:Int) {
 
@@ -26,19 +26,19 @@ class RuneStar(star:Int) {
     companion object{
 
         val NaN = 0
-        val Nan_IMAGE = R.drawable.rune_star_nan
+        val Nan_IMAGE = R.drawable.rune_emplacement_one
         val ONE = 1
-        val ONE_IMAGE = R.drawable.rune_star_one
+        val ONE_IMAGE = R.drawable.rune_emplacement_one
         val TWO = 2
-        val TWO_IMAGE = R.drawable.rune_star_two
+        val TWO_IMAGE = R.drawable.rune_emplacement_one
         val THREE = 3
-        val THREE_IMAGE = R.drawable.rune_star_three
+        val THREE_IMAGE = R.drawable.rune_emplacement_one
         val FOUR = 4
-        val FOUR_IMAGE = R.drawable.rune_star_four
+        val FOUR_IMAGE = R.drawable.rune_emplacement_one
         val FIVE = 5
-        val FIVE_IMAGE = R.drawable.rune_star_five
+        val FIVE_IMAGE = R.drawable.rune_emplacement_one
         val SIX = 6
-        val SIX_IMAGE = R.drawable.rune_star_six
+        val SIX_IMAGE = R.drawable.rune_emplacement_one
         val ANCIENT = 7
 
     }

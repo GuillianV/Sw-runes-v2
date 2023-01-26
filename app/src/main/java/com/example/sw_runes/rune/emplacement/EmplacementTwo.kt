@@ -1,8 +1,8 @@
-package com.example.myapplication.sw.rune.emplacement
+package com.example.sw_runes.sw.rune.emplacement
 
-import com.example.myapplication.R
-import com.example.myapplication.sw.rune.stats.primary.*
-import com.example.myapplication.sw.rune.stats.sub.*
+import com.example.sw_runes.R
+import com.example.sw_runes.sw.rune.stats.primary.*
+import com.example.sw_runes.sw.rune.stats.sub.*
 
 class EmplacementTwo : Emplacement() {
 
@@ -15,5 +15,5 @@ class EmplacementTwo : Emplacement() {
         Speed()
     )
     override var AVAILABLE_SUB_STATS : MutableList<SubStat> = mutableListOf(SubSpeed(),SubAccuracy(),SubResistance(),SubAttackPercent(),SubDefencePercent(),SubHealthPercent(),SubCritiqDamage(),SubCritiqRate(),SubAttackFlat(),SubDefenceFlat(),SubHealthFlat())
-    override var RUNE_IMAGE: Int = R.drawable.rune_emplacement_two
+    override var RUNE_IMAGE: Int = R.drawable.rune_emplacement_one
 }

@@ -1,4 +1,4 @@
-package com.example.myapplication.sw.rune
+package com.example.sw_runes.sw.rune
 
 import android.graphics.Color
 import android.os.Build

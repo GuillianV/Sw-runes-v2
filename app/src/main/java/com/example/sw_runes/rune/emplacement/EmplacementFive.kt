@@ -1,10 +1,10 @@
-package com.example.myapplication.sw.rune.emplacement
+package com.example.sw_runes.sw.rune.emplacement
 
-import com.example.myapplication.R
-import com.example.myapplication.sw.rune.stats.primary.AttackFlat
-import com.example.myapplication.sw.rune.stats.primary.HealthFlat
-import com.example.myapplication.sw.rune.stats.primary.PrimaryStat
-import com.example.myapplication.sw.rune.stats.sub.*
+import com.example.sw_runes.R
+import com.example.sw_runes.sw.rune.stats.primary.AttackFlat
+import com.example.sw_runes.sw.rune.stats.primary.HealthFlat
+import com.example.sw_runes.sw.rune.stats.primary.PrimaryStat
+import com.example.sw_runes.sw.rune.stats.sub.*
 
 class EmplacementFive : Emplacement() {
 
@@ -16,5 +16,5 @@ class EmplacementFive : Emplacement() {
         SubResistance(),SubAttackPercent(),SubDefencePercent(),SubHealthPercent(),SubCritiqDamage(),
         SubCritiqRate(),SubAttackFlat(),SubDefenceFlat()
     )
-    override var RUNE_IMAGE: Int = R.drawable.rune_emplacement_five
+    override var RUNE_IMAGE: Int = R.drawable.rune_emplacement_one
 }

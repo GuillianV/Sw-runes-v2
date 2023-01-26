@@ -1,13 +1,13 @@
-package com.example.myapplication.sw.rune
+package com.example.sw_runes.sw.rune
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
 import android.util.SparseArray
 import androidx.annotation.RequiresApi
-import com.example.myapplication.sw.rune.emplacement.Emplacement
-import com.example.myapplication.sw.rune.stats.primary.PrimaryStat
-import com.example.myapplication.sw.rune.stats.sub.SubStat
+import com.example.sw_runes.sw.rune.emplacement.Emplacement
+import com.example.sw_runes.sw.rune.stats.primary.PrimaryStat
+import com.example.sw_runes.sw.rune.stats.sub.SubStat
 import com.google.android.gms.vision.Frame
 import com.google.android.gms.vision.text.TextBlock
 import com.google.android.gms.vision.text.TextRecognizer

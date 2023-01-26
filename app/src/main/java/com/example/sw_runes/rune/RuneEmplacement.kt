@@ -1,8 +1,8 @@
-package com.example.myapplication.sw.rune
+package com.example.sw_runes.sw.rune
 
-import com.example.myapplication.sw.rune.emplacement.*
-import com.example.myapplication.sw.rune.stats.primary.AttackFlat
-import com.example.myapplication.sw.rune.stats.primary.PrimaryStat
+import com.example.sw_runes.sw.rune.emplacement.*
+import com.example.sw_runes.sw.rune.stats.primary.AttackFlat
+import com.example.sw_runes.sw.rune.stats.primary.PrimaryStat
 
 class RuneEmplacement() {
     companion object{

@@ -1,12 +1,12 @@
-package com.example.myapplication.sw.rune
+package com.example.sw_runes.sw.rune
 
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.myapplication.R
-import com.example.myapplication.sw.rune.stats.primary.PrimaryStat
+import com.example.sw_runes.R
+import com.example.sw_runes.sw.rune.stats.primary.PrimaryStat
 import java.util.*
 
 class RuneRarity {
