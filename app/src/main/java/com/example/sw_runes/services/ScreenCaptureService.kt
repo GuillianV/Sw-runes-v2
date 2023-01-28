@@ -41,6 +41,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.Buffer
+import java.util.*
 
 
 class ScreenCaptureService : LifecycleService() {
@@ -260,7 +261,7 @@ class ScreenCaptureService : LifecycleService() {
 
     fun sendRuneAnalyzer(bitmapByteArray: ByteArray) {
 
-        val data = Data.Builder()
+       /* val data = Data.Builder()
             .putByteArray(RuneAnalyzerWorker.key,bitmapByteArray)
             .build()
         //TODO
@@ -271,7 +272,7 @@ class ScreenCaptureService : LifecycleService() {
 
 
 
-        runeAnalyzerWorkManager.enqueue(request)
+        runeAnalyzerWorkManager.enqueue(request) */
     }
 
     //inner class
@@ -285,6 +286,9 @@ class ScreenCaptureService : LifecycleService() {
         private  var folderDir : String = "/DCIM/SWrunesStorage/"
         private var preBitmapText : String = "sw_"
         private var mStoreDir: String? = null
+
+        private val characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        private val random = Random()
 
 
         private var takepick = false;
@@ -320,6 +324,7 @@ class ScreenCaptureService : LifecycleService() {
                     getBitmapByteArray()?.let(pickedHandler)
 
                 } catch (e: Exception) {
+                    takepick = false
                     e.printStackTrace()
                 }
 
@@ -369,9 +374,10 @@ class ScreenCaptureService : LifecycleService() {
             }
 
 
+
             val bitmap = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
             val size : Int =  dirSize( File(mStoreDir))
-            var fileOutputStream: FileOutputStream =   FileOutputStream(mStoreDir +"/"+ preBitmapText + size + ".png")
+            var fileOutputStream: FileOutputStream =   FileOutputStream(mStoreDir +"/"+ preBitmapText + size +"_"+randomId()+ ".png")
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, fileOutputStream)
             fileOutputStream.close()
             bitmap?.recycle()
@@ -399,6 +405,12 @@ class ScreenCaptureService : LifecycleService() {
                 compress(Bitmap.CompressFormat.JPEG,50,this)
                 return toByteArray()
             }
+        }
+
+        private fun randomId() :String{
+
+            return (1..5).map { characters[random.nextInt(characters.length)] }.joinToString("")
+
         }
 
         private fun dirSize(dir: File): Int {
