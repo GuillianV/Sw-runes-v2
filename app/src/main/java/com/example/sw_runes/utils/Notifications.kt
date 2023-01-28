@@ -13,8 +13,8 @@ import com.example.sw_runes.R
 
 object Notifications {
     const val NOTIFICATION_ID = 1337
-    private const val NOTIFICATION_CHANNEL_ID = "com.mtsahakis.mediaprojectiondemo.app"
-    private const val NOTIFICATION_CHANNEL_NAME = "com.mtsahakis.mediaprojectiondemo.app"
+    private const val NOTIFICATION_CHANNEL_ID = "com.example.sw_runes.app"
+    private const val NOTIFICATION_CHANNEL_NAME = "com.example.sw_runes.app"
     fun getNotification(context: Context): Pair<Int, Notification> {
         createNotificationChannel(context)
         val notification = createNotification(context)
@@ -24,9 +24,7 @@ object Notifications {
         return Pair(NOTIFICATION_ID, notification)
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
                 NOTIFICATION_CHANNEL_NAME,
@@ -36,17 +34,17 @@ object Notifications {
             val manager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(channel)
-        }
+
     }
 
     private fun createNotification(context: Context): Notification {
         val builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-        builder.setSmallIcon(R.drawable.ic_launcher_foreground)
+        builder.setSmallIcon(R.drawable.rune_emplacement_one)
         builder.setContentTitle(context.getString(R.string.app_name))
-        builder.setContentText("recording")
+        builder.setContentText("wait for runes")
         builder.setOngoing(true)
         builder.setCategory(Notification.CATEGORY_SERVICE)
-        builder.priority = Notification.PRIORITY_LOW
+        builder.priority = NotificationManager.IMPORTANCE_DEFAULT
         builder.setShowWhen(true)
         return builder.build()
     }
