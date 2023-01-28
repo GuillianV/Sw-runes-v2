@@ -30,15 +30,14 @@
             </intent-filter>
         </activity>
 
+
         <service
-            android:name=".services.ScreenCaptureService"
+            android:name=".services.RuneAnalyzerService"
             android:foregroundServiceType="mediaProjection"
             android:exported="false"
             android:stopWithTask="true"
             android:enabled="true"/>
-        <service
-            android:name=".services.BubbleService"
-            android:exported="false" />
+
 
     </application>
 

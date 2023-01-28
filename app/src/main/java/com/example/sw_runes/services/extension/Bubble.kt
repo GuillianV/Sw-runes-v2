@@ -1,40 +1,25 @@
-package com.example.sw_runes.services
+package com.example.sw_runes.services.extension
 
-import android.annotation.SuppressLint
-import android.app.Service
 import android.content.Context
-import android.content.Intent
+import android.content.Context.LAYOUT_INFLATER_SERVICE
+import android.content.Context.WINDOW_SERVICE
 import android.content.res.Configuration
 import android.graphics.PixelFormat
-import android.os.*
 import android.view.*
 import android.widget.FrameLayout
-import androidx.activity.viewModels
-import androidx.compose.foundation.layout.*
 import androidx.core.os.bundleOf
-import androidx.core.os.persistableBundleOf
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
-import androidx.lifecycle.Observer
-import androidx.savedstate.SavedStateRegistry
-import androidx.savedstate.SavedStateRegistryController
-import androidx.savedstate.SavedStateRegistryOwner
-import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.sw_runes.enums.TapStatus
 import com.example.sw_runes.fragments.BubbleFragment
-import com.example.sw_runes.models.RecordingViewModel
+import com.example.sw_runes.services.RuneAnalyzerService
 import com.example.sw_runes.workers.BubbleWorker
-import java.util.*
 
 
+class Bubble(_runeAnalyzerService: RuneAnalyzerService) {
 
-
-class BubbleService : Service() {
-
-
+    private var runeAnalyzerService : RuneAnalyzerService
 
     private var windowManager: WindowManager? = null
     private lateinit var windowManagerParams :WindowManager.LayoutParams;
@@ -43,26 +28,28 @@ class BubbleService : Service() {
 
 
 
+    init {
 
-    override fun onBind(intent: Intent): IBinder? {
+        runeAnalyzerService = _runeAnalyzerService
+        windowManager = runeAnalyzerService.getSystemService(WINDOW_SERVICE) as WindowManager
 
-        return null
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+
+
+    fun createBubble(){
         createLayout()
     }
 
-    //Close service
-    override fun onDestroy() {
-        super.onDestroy()
+
+    fun destroyBubble(){
         if (bubbleFragment?.getRootView() != null) {
             windowManager!!.removeView(bubbleFragment!!.getRootView())
             bubbleFragment = null
         }
     }
+
+
 
 
 
@@ -89,15 +76,15 @@ class BubbleService : Service() {
 
 
         bubbleFragment = BubbleFragment()
-        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        bubbleFragment!!.onCreateView(inflater,FrameLayout(this), bundleOf())
+        val inflater = runeAnalyzerService.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        bubbleFragment!!.onCreateView(inflater,FrameLayout(runeAnalyzerService), bundleOf())
         bubbleFragment!!.setWindowParams(windowManager!!,windowManagerParams)
         windowManager!!.addView(bubbleFragment?.getRootView(), windowManagerParams)
 
 
         bubbleFragment!!.onInteraction =  { tap -> sendDataBubble(tap) }
 
-        var mOrientationChangeCallback = OrientationChangeCallback(this)
+        var mOrientationChangeCallback = OrientationChangeCallback(runeAnalyzerService)
         if (mOrientationChangeCallback?.canDetectOrientation() == true) {
             mOrientationChangeCallback!!.enable()
         }
@@ -113,7 +100,7 @@ class BubbleService : Service() {
 
         override fun onOrientationChanged(orientation: Int) {
             try {
-                var phoneOrientation =getResources().getConfiguration().orientation
+                var phoneOrientation =runeAnalyzerService.getResources().getConfiguration().orientation
                 if(phoneOrientation== Configuration.ORIENTATION_LANDSCAPE && baseOrientation != Configuration.ORIENTATION_LANDSCAPE ){
                     baseOrientation = Configuration.ORIENTATION_LANDSCAPE
                     windowManagerParams.x = 0
@@ -138,7 +125,7 @@ class BubbleService : Service() {
     }
 
 
-    private val workManager = WorkManager.getInstance(this)
+    private val workManager = WorkManager.getInstance(runeAnalyzerService)
 
     fun sendDataBubble(tapStatus: String): Boolean {
 

@@ -5,25 +5,19 @@ import android.app.Notification
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
-import android.os.Handler
-import android.os.Looper
 import androidx.core.util.Pair
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.Observer
-import androidx.work.Configuration
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
-import com.example.sw_runes.enums.TapStatus
+import com.example.sw_runes.services.extension.Bubble
+import com.example.sw_runes.services.extension.ScreenCapture
 import com.example.sw_runes.utils.Notifications
-import com.example.sw_runes.workers.BubbleWorker
-import com.example.sw_runes.workers.RuneAnalyzerWorker
 
 class RuneAnalyzerService : LifecycleService() {
 
 
     private var baseOrientation : Int = ORIENTATION_PORTRAIT;
-    private lateinit var handler : Handler
+
+    lateinit private var bubble : Bubble
+    lateinit private var screenCapture: ScreenCapture
 
 
     companion object {
@@ -36,7 +30,7 @@ class RuneAnalyzerService : LifecycleService() {
         private val ACTION_STOP = "STOP"
 
         fun getStartIntent(context: Context?, resultCode: Int, data: Intent?): Intent? {
-            val intent = Intent(context, ScreenCaptureService::class.java)
+            val intent = Intent(context, RuneAnalyzerService::class.java)
             intent.putExtra(KEY_ACTION, ACTION_START)
             intent.putExtra(KEY_RESULT_CODE, resultCode)
             intent.putExtra(KEY_DATA, data)
@@ -45,7 +39,7 @@ class RuneAnalyzerService : LifecycleService() {
 
 
         fun getStopIntent(context: Context?): Intent? {
-            val intent = Intent(context, ScreenCaptureService::class.java)
+            val intent = Intent(context, RuneAnalyzerService::class.java)
             intent.putExtra(KEY_ACTION, ACTION_STOP)
             return intent
         }
@@ -68,16 +62,19 @@ class RuneAnalyzerService : LifecycleService() {
 
         baseOrientation = getResources().getConfiguration().orientation
 
-        // start capture handling thread
-        object : Thread() {
-            override fun run() {
-                Looper.prepare()
-                handler = Handler(Looper.getMainLooper())
-                Looper.loop()
-            }
-        }.start()
+        bubble = Bubble(this)
+        screenCapture = ScreenCapture(this)
+
     }
 
+
+    override fun onDestroy() {
+
+        screenCapture.destroyMediaProjection()
+        bubble.destroyBubble()
+
+        super.onDestroy()
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
@@ -91,17 +88,33 @@ class RuneAnalyzerService : LifecycleService() {
 
             // start projection
             val resultCode = intent.getIntExtra(KEY_RESULT_CODE, Activity.RESULT_CANCELED)
-
             val data = intent.getParcelableExtra<Intent>(KEY_DATA)
-            startProjection(resultCode, data)
 
+
+            //startProjection(resultCode, data)
+            startAnalyze(resultCode,data!!)
         } else if (isStopCommand(intent)) {
-            stopProjection()
+            stopAnalyze()
+           // stopProjection()
             stopSelf()
         } else {
             stopSelf()
         }
         return START_NOT_STICKY
+    }
+
+    fun startAnalyze(resultCode: Int,data: Intent){
+
+        bubble.createBubble()
+        screenCapture.createMediaProjection( resultCode,data)
+
+    }
+
+    fun stopAnalyze(){
+
+        screenCapture.destroyMediaProjection()
+        bubble.destroyBubble()
+
     }
 
 

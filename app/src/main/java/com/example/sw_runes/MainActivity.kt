@@ -14,24 +14,19 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.Observer
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import com.example.sw_runes.models.RecordingViewModel
-import com.example.sw_runes.services.BubbleService
-import com.example.sw_runes.services.ScreenCaptureService
+import com.example.sw_runes.services.RuneAnalyzerService
 import com.example.sw_runes.ui.theme.*
 import com.example.sw_runes.utils.Permissions.Companion.isManageOverlayGranted
 import com.example.sw_runes.utils.Permissions.Companion.isWriteExternalStorageGranted
-import com.example.sw_runes.workers.BubbleWorker
 
 class MainActivity : ComponentActivity() {
 
 
 
 
-    lateinit var bubbleIntent : Intent;
+    lateinit var runeAnalyzerService : Intent;
+
 
     private val recordingViewModel: RecordingViewModel by viewModels()
 
@@ -76,7 +71,6 @@ class MainActivity : ComponentActivity() {
 
             // Launch service right away - the user has already previously granted permission
             startProjection()
-            startBubbleService()
 
         } else {
 
@@ -91,7 +85,6 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
 
         stopProjection()
-        stopBubbleService()
         super.onDestroy()
     }
     fun startProjection() {
@@ -104,7 +97,7 @@ class MainActivity : ComponentActivity() {
                 // There are no request codes
                 val data: Intent? = result.data
                 startService(
-                    ScreenCaptureService.getStartIntent(
+                    RuneAnalyzerService.getStartIntent(
                         this,
                         result.resultCode,
                         data
@@ -116,19 +109,10 @@ class MainActivity : ComponentActivity() {
         resultLauncher.launch(mProjectionManager.createScreenCaptureIntent())
     }
     private fun stopProjection() {
-       stopService(ScreenCaptureService.getStopIntent(this))
+       stopService(RuneAnalyzerService.getStopIntent(this))
     }
 
-    private fun startBubbleService() {
-        bubbleIntent = Intent(this, BubbleService::class.java)
-        startService(bubbleIntent)
 
-    }
-    private fun stopBubbleService() {
-        bubbleIntent = Intent(this, BubbleService::class.java)
-        stopService(bubbleIntent)
-
-    }
 
 
 
