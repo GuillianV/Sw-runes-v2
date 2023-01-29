@@ -6,7 +6,8 @@ class TapStatus {
         val Tap = "tap";
         val DragEnd = "drag_end";
         val Dragging= "dragging";
-        val Nothing = "nothing"
+        val Waiting= "waiting";
+        val Ready= "ready";
     }
 
 }

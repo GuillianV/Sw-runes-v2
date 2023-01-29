@@ -8,13 +8,9 @@ import android.graphics.PixelFormat
 import android.view.*
 import android.widget.FrameLayout
 import androidx.core.os.bundleOf
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.sw_runes.enums.TapStatus
 import com.example.sw_runes.fragments.BubbleFragment
 import com.example.sw_runes.services.RuneAnalyzerService
-import com.example.sw_runes.workers.BubbleWorker
 
 
 class Bubble(_runeAnalyzerService: RuneAnalyzerService) {
@@ -75,14 +71,12 @@ class Bubble(_runeAnalyzerService: RuneAnalyzerService) {
 
 
 
-        bubbleFragment = BubbleFragment()
+        bubbleFragment = BubbleFragment(runeAnalyzerService)
         val inflater = runeAnalyzerService.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         bubbleFragment!!.onCreateView(inflater,FrameLayout(runeAnalyzerService), bundleOf())
         bubbleFragment!!.setWindowParams(windowManager!!,windowManagerParams)
         windowManager!!.addView(bubbleFragment?.getRootView(), windowManagerParams)
 
-
-        bubbleFragment!!.onInteraction =  { tap -> sendDataBubble(tap) }
 
         var mOrientationChangeCallback = OrientationChangeCallback(runeAnalyzerService)
         if (mOrientationChangeCallback?.canDetectOrientation() == true) {
@@ -125,26 +119,5 @@ class Bubble(_runeAnalyzerService: RuneAnalyzerService) {
     }
 
 
-    private val workManager = WorkManager.getInstance(runeAnalyzerService)
-
-    fun sendDataBubble(tapStatus: String): Boolean {
-
-        if (tapStatus == TapStatus.Dragging)
-            return false
-
-
-        val data = Data.Builder()
-
-            .putString(BubbleWorker.key,tapStatus)
-            .build()
-
-        val request = OneTimeWorkRequestBuilder<BubbleWorker>()
-            .addTag(BubbleWorker.tag)
-            .setInputData(data)
-            .build()
-
-        workManager.enqueue(request)
-        return  true
-    }
 
 }

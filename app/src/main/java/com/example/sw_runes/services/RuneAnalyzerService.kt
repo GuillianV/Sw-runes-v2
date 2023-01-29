@@ -7,6 +7,8 @@ import android.content.Intent
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.core.util.Pair
 import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.MutableLiveData
+import com.example.sw_runes.enums.TapStatus
 import com.example.sw_runes.services.extension.Bubble
 import com.example.sw_runes.services.extension.ScreenCapture
 import com.example.sw_runes.utils.Notifications
@@ -16,8 +18,11 @@ class RuneAnalyzerService : LifecycleService() {
 
     private var baseOrientation : Int = ORIENTATION_PORTRAIT;
 
-    lateinit private var bubble : Bubble
-    lateinit private var screenCapture: ScreenCapture
+    lateinit var bubble : Bubble
+    lateinit var screenCapture: ScreenCapture
+
+
+    var mutableBubbleStatus: MutableLiveData<String> = MutableLiveData()
 
 
     companion object {
@@ -61,7 +66,7 @@ class RuneAnalyzerService : LifecycleService() {
         super.onCreate()
 
         baseOrientation = getResources().getConfiguration().orientation
-
+        mutableBubbleStatus.value = TapStatus.Ready
         bubble = Bubble(this)
         screenCapture = ScreenCapture(this)
 

@@ -19,12 +19,9 @@ import android.os.*
 import android.view.Display
 import android.view.WindowManager
 import androidx.lifecycle.Observer
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.sw_runes.enums.TapStatus
 import com.example.sw_runes.services.RuneAnalyzerService
-import com.example.sw_runes.workers.BubbleWorker
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -78,7 +75,7 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
                 // register media projection stop callback
                 mMediaProjection!!.registerCallback(MediaProjectionStopCallback(), mHandler)
 
-                listenBubbleWorker()
+                listenBubbleTapStatus()
 
             }
         }
@@ -126,62 +123,34 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
         mImageReader!!.setOnImageAvailableListener(bitmapSaver.ImageAvailableListener(), mHandler)
     }
 
-    private fun listenBubbleWorker(){
-        val request = OneTimeWorkRequestBuilder<BubbleWorker>()
-            .addTag(BubbleWorker.tag)
-            .build()
+    private fun listenBubbleTapStatus(){
 
-        workManager.enqueue(request)
-        workManager.getWorkInfosByTagLiveData(BubbleWorker.tag)
-            .observe(runeAnalyzerService, Observer { workInfos ->
-                if (workInfos != null) {
-                    for (workInfo in workInfos) {
-                        when (workInfo.state) {
-                            WorkInfo.State.SUCCEEDED -> {
+        runeAnalyzerService.mutableBubbleStatus.observe(runeAnalyzerService, Observer {
 
-                                var tapStatus = workInfo.outputData.getString(BubbleWorker.key)
-                                if (tapStatus == TapStatus.Tap){
-                                    var actualOrientation = runeAnalyzerService.getResources().getConfiguration().orientation
-                                    if (baseOrientation != actualOrientation){
-                                        baseOrientation = actualOrientation
-                                        changeOrientation(actualOrientation)
-                                    }
+            if (it == TapStatus.Tap){
+                var actualOrientation = runeAnalyzerService.getResources().getConfiguration().orientation
+                if (baseOrientation != actualOrientation){
+                    baseOrientation = actualOrientation
+                    changeOrientation(actualOrientation)
+                }
 
 
-                                    bitmapSaver.pickedHandler = {
-                                        sendRuneAnalyzer(it)
-                                    }
+                bitmapSaver.pickedHandler = {
+                    sendRuneAnalyzer(it)
+                }
 
-                                    bitmapSaver.takePick()
-                                }
+                bitmapSaver.takePick()
+            }
+        })
 
-                            }
-                            else -> {
-                                print("enque")
-                            }
-                        }
-                    }
-                    workManager.pruneWork()
-                }})
 
     }
 
-    private val runeAnalyzerWorkManager = WorkManager.getInstance(runeAnalyzerService)
 
     fun sendRuneAnalyzer(bitmapByteArray: ByteArray) {
 
-       /* val data = Data.Builder()
-            .putByteArray(RuneAnalyzerWorker.key,bitmapByteArray)
-            .build()
-        //TODO
-        val request = OneTimeWorkRequestBuilder<BubbleWorker>()
-            .addTag(RuneAnalyzerWorker.tag)
-            .setInputData(data)
-            .build()
+        runeAnalyzerService.mutableBubbleStatus.value = TapStatus.Ready
 
-
-
-        runeAnalyzerWorkManager.enqueue(request) */
     }
 
     //inner class

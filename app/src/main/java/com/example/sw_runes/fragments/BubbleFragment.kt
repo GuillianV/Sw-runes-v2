@@ -1,7 +1,6 @@
 package com.example.sw_runes.fragments
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,19 +8,25 @@ import android.view.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.work.*
-import com.example.sw_runes.R
 import com.example.sw_runes.databinding.BubbleBinding
 import com.example.sw_runes.enums.TapStatus
+import com.example.sw_runes.services.RuneAnalyzerService
 import com.example.sw_runes.ui.theme.black025
-import com.example.sw_runes.workers.BubbleWorker
 
-class BubbleFragment : Fragment() {
+class BubbleFragment(_runeAnalyzerService: RuneAnalyzerService) : Fragment() {
 
 
 
     private var _binding: BubbleBinding? = null
     private val binding get() = _binding!!
+
+    private val runeAnalyzerService : RuneAnalyzerService
+
+    init {
+        runeAnalyzerService = _runeAnalyzerService;
+    }
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -35,6 +40,7 @@ class BubbleFragment : Fragment() {
         _binding = BubbleBinding.inflate(inflater,container,false)
         val view = binding.root
         binding.container.setOnTouchListener { view, motionEvent -> onTouchListener(view,motionEvent) }
+        listenBubbleTapStatus()
 
         return view
     }
@@ -53,7 +59,6 @@ class BubbleFragment : Fragment() {
     private var dragVale = 0
     private  var startTime : Long = System.currentTimeMillis();
 
-    var onInteraction : (String) -> Boolean  = { false};
 
 
 
@@ -133,42 +138,48 @@ class BubbleFragment : Fragment() {
 
     }
 
-    private var mHandler: Handler   = Handler(Looper.getMainLooper())
 
-    @SuppressLint("WrongConstant")
     private fun interact(status: String){
         when (status) {
             TapStatus.Dragging -> {
 
                 binding.bubbleImage.rotation += 1
-                onInteraction(TapStatus.Dragging)
+                sendBubbleTapStatus(TapStatus.Dragging)
             }
             TapStatus.DragEnd -> {
-
-                onInteraction(TapStatus.DragEnd)
+                sendBubbleTapStatus(TapStatus.DragEnd)
             }
             TapStatus.Tap -> {
 
                 binding.bubbleImage.setColorFilter(black025.toArgb())
-                onInteraction(TapStatus.Tap)
-                mHandler.postDelayed({
-
-                    binding.bubbleImage.setColorFilter(Color.Transparent.toArgb())
-
-                },500)
-                //  val RTReturn = Intent(ScreenCaptureService.SCREENSHOT)
-                //  LocalBroadcastManager.getInstance(this).sendBroadcast(RTReturn)
-
-               // println(viewModel.startRecoding.value)
+                sendBubbleTapStatus(TapStatus.Tap)
 
             }
             else -> {
-                onInteraction(TapStatus.Nothing)
+                sendBubbleTapStatus(TapStatus.Ready)
             }
 
         }
 
     }
+
+    private fun sendBubbleTapStatus(tapStatus: String){
+        runeAnalyzerService.mutableBubbleStatus.value = tapStatus
+    }
+    private fun listenBubbleTapStatus(){
+
+        runeAnalyzerService.mutableBubbleStatus.observe(runeAnalyzerService, Observer {
+
+            if (it == TapStatus.Ready){
+
+                binding.bubbleImage.setColorFilter(Color.Transparent.toArgb())
+
+            }
+        })
+
+
+    }
+
 
 
 }
