@@ -15,14 +15,11 @@ class RuneEmplacement() {
         val EMPLACEMENT_FIVE = 5
         val EMPLACEMENT_SIX = 6
 
-        fun setRuneEmplacement(string: String):Emplacement{
 
-                var value = string.substringAfter('(').substringBefore(')').toIntOrNull()
 
-                if(value == null && string.contains("()"))
-                    value = 4
 
-                when(value){
+        fun setRuneEmplacement(emplacementNumber: Int):Emplacement{
+                when(emplacementNumber){
                     1 -> return EmplacementOne()
                     2 -> return EmplacementTwo()
                     3 -> return EmplacementThree()

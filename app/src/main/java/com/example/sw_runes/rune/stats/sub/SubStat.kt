@@ -1,10 +1,8 @@
 package com.example.sw_runes.sw.rune.stats.sub
 
-import com.example.sw_runes.sw.rune.RuneLevel
-import com.example.sw_runes.sw.rune.RuneRarity
+import com.example.sw_runes.rune.RuneRarity
 import com.example.sw_runes.sw.rune.RuneStar
 import com.example.sw_runes.sw.rune.stats.primary.PrimaryStat
-import kotlin.math.roundToInt
 
 open  class SubStat{
 

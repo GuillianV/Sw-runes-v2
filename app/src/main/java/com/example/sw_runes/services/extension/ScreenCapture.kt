@@ -150,6 +150,7 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
     fun sendRuneAnalyzer(bitmapByteArray: ByteArray) {
 
         runeAnalyzerService.mutableBubbleStatus.value = TapStatus.Ready
+        runeAnalyzerService.setRune(bitmapByteArray)
 
     }
 

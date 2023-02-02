@@ -81,9 +81,8 @@ class RuneAnalyzerService : LifecycleService() {
     fun setRune(bitmapByteArray: ByteArray){
 
         val bitmap = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
+        rune = Rune().setRune(this,bitmap)
 
-        rune = Rune()
-        rune!!.setRune(this,bitmap)
 
     }
 
