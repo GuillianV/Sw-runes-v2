@@ -82,11 +82,8 @@ class RuneAnalyzerService : LifecycleService() {
     fun setRune(bitmapByteArray: ByteArray){
 
         val bitmap = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
-        rune = Rune().setRune(this,bitmap)
-        if (rune==null){
-            Toast.makeText(this,"Rune non trouvé", Toast.LENGTH_LONG).show()
-            return
-        }
+        rune = Rune(this).setRune(this,bitmap)
+
 
     }
 

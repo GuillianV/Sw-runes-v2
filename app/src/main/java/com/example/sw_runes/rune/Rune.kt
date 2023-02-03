@@ -5,8 +5,10 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.example.sw_runes.enums.TapStatus
 import com.example.sw_runes.rune.RuneRarity
 import com.example.sw_runes.rune.rarity.Rarity
+import com.example.sw_runes.services.RuneAnalyzerService
 import com.example.sw_runes.sw.rune.emplacement.Emplacement
 import com.example.sw_runes.sw.rune.stats.primary.PrimaryStat
 import com.example.sw_runes.utils.StringUtil
@@ -15,7 +17,12 @@ import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 
-class Rune()  {
+class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
+
+    var runeAnalyzerService: RuneAnalyzerService
+    init {
+        runeAnalyzerService = _runeAnalyzerService
+    }
 
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     lateinit var bitmap : Bitmap
@@ -48,6 +55,9 @@ class Rune()  {
             {
 
             }
+
+
+            runeAnalyzerService.mutableBubbleStatus.value = TapStatus.Ready
 
             _bitmap!!.recycle()
         }.addOnFailureListener { throw Exception("Erreur recognizer") }.addOnCompleteListener {

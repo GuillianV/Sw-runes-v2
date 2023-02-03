@@ -136,7 +136,7 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
 
 
                 bitmapSaver.pickedHandler = {
-                    sendRuneAnalyzer(it)
+                    runeAnalyzerService.setRune(it)
                 }
 
                 bitmapSaver.takePick()
@@ -147,12 +147,7 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
     }
 
 
-    fun sendRuneAnalyzer(bitmapByteArray: ByteArray) {
 
-        runeAnalyzerService.mutableBubbleStatus.value = TapStatus.Ready
-        runeAnalyzerService.setRune(bitmapByteArray)
-
-    }
 
     //inner class
     inner class BitmapSaver {
