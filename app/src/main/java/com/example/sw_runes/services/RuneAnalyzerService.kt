@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import android.graphics.BitmapFactory
+import android.widget.Toast
 import androidx.core.util.Pair
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
@@ -82,7 +83,10 @@ class RuneAnalyzerService : LifecycleService() {
 
         val bitmap = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
         rune = Rune().setRune(this,bitmap)
-
+        if (rune==null){
+            Toast.makeText(this,"Rune non trouvé", Toast.LENGTH_LONG).show()
+            return
+        }
 
     }
 

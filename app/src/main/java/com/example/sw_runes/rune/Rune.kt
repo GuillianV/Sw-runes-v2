@@ -3,10 +3,12 @@ package com.example.sw_runes.sw.rune
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.example.sw_runes.rune.RuneRarity
 import com.example.sw_runes.rune.rarity.Rarity
 import com.example.sw_runes.sw.rune.emplacement.Emplacement
+import com.example.sw_runes.sw.rune.stats.primary.PrimaryStat
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
@@ -22,29 +24,27 @@ class Rune()  {
     var runeEmplacement : Emplacement = Emplacement()
     var runeLevel : Int = RuneLevel.Nan
     var runeRarity : Rarity = Rarity()
+    var runeStar : RuneStar = RuneStar(0)
+    //Rune stats
+    var runeMainStat : PrimaryStat = PrimaryStat()
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun  setRune(context: Context, _bitmap: Bitmap) : Rune{
+
+
+    fun  setRune(context: Context, _bitmap: Bitmap) : Rune?{
 
         bitmap = _bitmap
         val inputImage = InputImage.fromBitmap(_bitmap,0)
         recognizer.process(inputImage).addOnSuccessListener { visionText ->
 
-            print( setRuneBaseStats(visionText.textBlocks))
+            if(!setRuneBaseStats(visionText.textBlocks)){
 
+            }
 
 
             _bitmap!!.recycle()
-
         }.addOnFailureListener { throw Exception("Erreur recognizer") }.addOnCompleteListener {
 
-
         }
-
-
-
-
-
 
         return this;
     }
@@ -69,14 +69,28 @@ class Rune()  {
 
             if (runeEmplacement.NUMBER != RuneEmplacement.NaN && runeLevel != RuneLevel.Nan &&  runeRarity != Rarity())
                 break
-
         }
         if (runeEmplacement.NUMBER == RuneEmplacement.NaN || runeLevel == RuneLevel.Nan ||  runeRarity == Rarity())
             return false
 
-
         return true
     }
 
+
+    private fun setPrimaryStat(textBlocks: List<Text.TextBlock>): Boolean{
+
+        textBlocks.forEach { textblock ->
+            textblock.text.split("\n").forEach { text ->
+                runeEmplacement.AVAILABLE_MAIN_STATS.forEach { primaryStat ->
+                    if (primaryStat.checkPrimaryStat(text)){
+
+
+
+                    }
+                }
+            }
+        }
+
+    }
 
 }
