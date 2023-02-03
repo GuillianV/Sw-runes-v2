@@ -9,6 +9,7 @@ import com.example.sw_runes.rune.RuneRarity
 import com.example.sw_runes.rune.rarity.Rarity
 import com.example.sw_runes.sw.rune.emplacement.Emplacement
 import com.example.sw_runes.sw.rune.stats.primary.PrimaryStat
+import com.example.sw_runes.utils.StringUtil
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
@@ -26,7 +27,7 @@ class Rune()  {
     var runeRarity : Rarity = Rarity()
     var runeStar : RuneStar = RuneStar(0)
     //Rune stats
-    var runeMainStat : PrimaryStat = PrimaryStat()
+    var runePrimaryStat : PrimaryStat = PrimaryStat()
 
 
 
@@ -36,10 +37,17 @@ class Rune()  {
         val inputImage = InputImage.fromBitmap(_bitmap,0)
         recognizer.process(inputImage).addOnSuccessListener { visionText ->
 
-            if(!setRuneBaseStats(visionText.textBlocks)){
+
+            var testBlocksSorted : List<Text.TextBlock> = visionText.textBlocks.sortedWith(compareBy { it.boundingBox?.top })
+
+            if(!setRuneBaseStats(testBlocksSorted)){
 
             }
 
+            if(!setPrimaryStat(testBlocksSorted))
+            {
+
+            }
 
             _bitmap!!.recycle()
         }.addOnFailureListener { throw Exception("Erreur recognizer") }.addOnCompleteListener {
@@ -82,15 +90,20 @@ class Rune()  {
         textBlocks.forEach { textblock ->
             textblock.text.split("\n").forEach { text ->
                 runeEmplacement.AVAILABLE_MAIN_STATS.forEach { primaryStat ->
-                    if (primaryStat.checkPrimaryStat(text)){
+                    if (primaryStat.checkPrimaryStat(text) && (runeStar.NUMBER == RuneStar.NaN || runePrimaryStat.PRIMARY.ACTUAL_STAT == 0)){
+                        StringUtil.getOnlyNumber(text)?.let {primaryStatValue ->
+                            primaryStat.setStarByPrimaryStat(runeLevel,primaryStatValue)?.let { runeStarValue ->
+                                runeStar = RuneStar(runeStarValue)
+                                runePrimaryStat = primaryStat.setPrimaryStat(runeStarValue,primaryStatValue)
 
-
-
+                            }
+                        }
                     }
                 }
             }
         }
 
+        return (runeStar.NUMBER != RuneStar.NaN && runePrimaryStat.PRIMARY.ACTUAL_STAT != 0)
     }
 
 }

@@ -12,67 +12,45 @@ class CritiqRate: PrimaryStat() {
         return stringVal.contains(PRIMARY_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT)&& stringVal.contains('+')
     }
 
-    override fun setStarByPrimaryStat(runeLevel : Int, stringVal: String ) :Int  {
+    override fun setStarByPrimaryStat(runeLevel : Int, primaryStatValue: Int ) :Int  {
 
-        if (stringVal.contains(PRIMARY_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT)&& stringVal.contains('+')){
-            var value = stringVal.substringAfter(PRIMARY_STAT_TEXT).substringAfter('+').substringBefore('%').replace(" ","").toIntOrNull()
-
-            if (value!=  null ){
 
                 var CritiqRateList : MutableList<Primary> = mutableListOf(
-                    CritiqRateSix(value),
-                    CritiqRateFive(value),
-                    CritiqRateFour(value),
-                    CritiqRateThree(value),
-                    CritiqRateTwo(value),
-                    CritiqRateOne(value),
+                    CritiqRateSix(primaryStatValue),
+                    CritiqRateFive(primaryStatValue),
+                    CritiqRateFour(primaryStatValue),
+                    CritiqRateThree(primaryStatValue),
+                    CritiqRateTwo(primaryStatValue),
+                    CritiqRateOne(primaryStatValue),
 
                     )
 
                 CritiqRateList.forEach {
 
-                    if ( it.checkPrimaryWithLevel(value,runeLevel)){
+                    if ( it.checkPrimaryWithLevel(primaryStatValue,runeLevel)){
                         return it.STARS
                     }
 
                 }
 
                 return RuneStar.NaN
-            }else{
-                return  RuneStar.NaN
-            }
-        }else{
-            return  RuneStar.NaN
-        }
+
     }
 
 
-    override fun setPrimaryStat(runeStars : Int, stringVal: String  ) : PrimaryStat {
+    override fun setPrimaryStat(runeStars : Int, primaryStatValue : Int
+   ) : PrimaryStat {
 
-        if (stringVal.contains(PRIMARY_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT) && stringVal.contains('%')) {
-            var value =
-                stringVal.substringAfter(PRIMARY_STAT_TEXT).substringAfter('+').substringBefore('%').replace(" ", "")
-                    .toIntOrNull()
-
-
-            if (value != null){
-                when(runeStars){
-                    1 -> PRIMARY = CritiqRateOne(value)
-                    2 -> PRIMARY = CritiqRateTwo(value)
-                    3 -> PRIMARY = CritiqRateThree(value)
-                    4 -> PRIMARY = CritiqRateFour(value)
-                    5 -> PRIMARY = CritiqRateFive(value)
-                    6 -> PRIMARY = CritiqRateSix(value)
-                    else ->{
-                        PRIMARY = Primary(0)
-                    }
-                }
-            }else{
-                PRIMARY =  Primary(0)
+        when(runeStars){
+            1 -> PRIMARY = CritiqRateOne(primaryStatValue)
+            2 -> PRIMARY = CritiqRateTwo(primaryStatValue)
+            3 -> PRIMARY = CritiqRateThree(primaryStatValue)
+            4 -> PRIMARY = CritiqRateFour(primaryStatValue)
+            5 -> PRIMARY = CritiqRateFive(primaryStatValue)
+            6 -> PRIMARY = CritiqRateSix(primaryStatValue)
+            else ->{
+                PRIMARY = Primary(0)
             }
-
-        }else{
-            PRIMARY =  Primary(0)
         }
 
         return this
@@ -87,10 +65,8 @@ class CritiqRate: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 1
-        override var MAX_STAT = 18
-        override var EACH_LEVEL = 1f
-        override var LAST_LEVEL = 3
+        override var statsList:  Array<Int> = arrayOf(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,18)
+
 
     }
 
@@ -103,10 +79,8 @@ class CritiqRate: PrimaryStat() {
         }
 
 
-        override var BASE_STAT= 2
-        override var MAX_STAT = 20
-        override var EACH_LEVEL = 1f
-        override var LAST_LEVEL = 4
+        override var statsList:  Array<Int> = arrayOf(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20)
+
 
     }
 
@@ -117,10 +91,8 @@ class CritiqRate: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 3
-        override var MAX_STAT = 37
-        override var EACH_LEVEL = 2f
-        override var LAST_LEVEL = 6
+          override var statsList:  Array<Int> = arrayOf(3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,37)
+ 
 
     }
 
@@ -131,10 +103,8 @@ class CritiqRate: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 4
-        override var MAX_STAT = 41
-        override var EACH_LEVEL = 2.25f
-        override var LAST_LEVEL = 6
+        override var statsList:  Array<Int> = arrayOf(4,6,8,10,13,15,17,19,22,24,26,28,31,33,35,41)
+
 
     }
 
@@ -145,10 +115,8 @@ class CritiqRate: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 5
-        override var MAX_STAT = 47
-        override var EACH_LEVEL = 2.5f
-        override var LAST_LEVEL = 7
+          override var statsList:  Array<Int> = arrayOf(5,7,10,12,15,17,20,22,25,27,30,32,35,37,40,47)
+ 
 
     }
 
@@ -160,10 +128,8 @@ class CritiqRate: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 7
-        override var MAX_STAT = 58
-        override var EACH_LEVEL = 3f
-        override var LAST_LEVEL = 9
+          override var statsList:  Array<Int> = arrayOf(7,10,13,16,19,22,25,28,31,34,37,40,43,46,49,58)
+ 
 
     }
 

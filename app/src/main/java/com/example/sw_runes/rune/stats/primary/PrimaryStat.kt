@@ -12,13 +12,13 @@ open  class PrimaryStat{
     open var PRIMARY_STAT_TEXT = ""
     open var SECONDARY_STAT_TEXT = ""
 
-    open  fun setStarByPrimaryStat(runeLevel : Int , string: String) :Int  {
+    open  fun setStarByPrimaryStat(runeLevel : Int , primaryStatValue : Int) :Int  {
 
         return RuneStar.NaN
 
     }
 
-    open  fun setPrimaryStat(runeStars : Int, stringVal: String) :PrimaryStat  {
+    open  fun setPrimaryStat(runeStars : Int, primaryStatValue : Int ) :PrimaryStat  {
 
         return PrimaryStat()
 
@@ -41,28 +41,11 @@ open  class PrimaryStat{
             ACTUAL_STAT = statValue
         }
 
-
-        open var BASE_STAT = 0
-        open var MAX_STAT = 0
-
-        open var EACH_LEVEL : Float = 0f
-        open var LAST_LEVEL = 0
-
-        open fun checkPrimaryWithLevel(primaryStatvalue : Int, runeLevel: Int):Boolean{
-            when(runeLevel){
-                15 -> return  primaryStatvalue == MAX_STAT
-                14 -> return primaryStatvalue == ( MAX_STAT - LAST_LEVEL)
-                0 -> return primaryStatvalue == BASE_STAT
-                else -> {
-                    var amount = (runeLevel * EACH_LEVEL) + BASE_STAT
-
-                    return amount.roundToInt() == primaryStatvalue && amount <= MAX_STAT
+        open var statsList:  Array<Int> = arrayOf(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
 
-
-                }
-
-            }
+        fun checkPrimaryWithLevel(primaryStatvalue : Int, runeLevel: Int):Boolean{
+                return primaryStatvalue == statsList[runeLevel]
         }
 
 

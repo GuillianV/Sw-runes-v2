@@ -29,7 +29,7 @@ class RuneLevel {
                      val nonNumber = "[^0-9]".toRegex()
                      var value = string.substringBefore("Rune")
                      val stringLevel = value.replace(nonNumber, "")
-                     val level = (stringLevel.toIntOrNull() ?: Nan)
+                     val level = (stringLevel.toIntOrNull() ?: ZERO)
 
                      return level
 

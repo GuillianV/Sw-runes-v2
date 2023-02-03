@@ -14,68 +14,45 @@ class DefenceFlat: PrimaryStat() {
         return stringVal.contains(PRIMARY_STAT_TEXT) && !stringVal.contains('%')
     }
 
-    override fun setStarByPrimaryStat(runeLevel : Int, stringVal: String ) :Int  {
-
-        if (stringVal.contains(PRIMARY_STAT_TEXT) && !stringVal.contains('%')){
-            var value = stringVal.substringAfter(PRIMARY_STAT_TEXT).substringAfter('+').substringBefore('+').replace(" ","").toIntOrNull()
-
-            if (value!=  null ){
+    override fun setStarByPrimaryStat(runeLevel : Int,primaryStatValue: Int ) :Int  {
 
             var DefenceFlatList : MutableList<Primary> = mutableListOf(
-                DefenceFlatSix(value),
-                DefenceFlatFive(value),
-                DefenceFlatFour(value),
-                DefenceFlatThree(value),
-                DefenceFlatTwo(value),
-                DefenceFlatOne(value),
+                DefenceFlatSix(primaryStatValue),
+                DefenceFlatFive(primaryStatValue),
+                DefenceFlatFour(primaryStatValue),
+                DefenceFlatThree(primaryStatValue),
+                DefenceFlatTwo(primaryStatValue),
+                DefenceFlatOne(primaryStatValue),
 
             )
 
             DefenceFlatList.forEach {
 
-                if ( it.checkPrimaryWithLevel(value,runeLevel)){
+                if ( it.checkPrimaryWithLevel(primaryStatValue,runeLevel)){
                     return it.STARS
                 }
                     
             }
 
             return RuneStar.NaN
-        }else{
-            return  RuneStar.NaN
-        }
-        }else{
-            return  RuneStar.NaN
-        }
+
     }
 
 
-    override fun setPrimaryStat(runeStars : Int, stringVal: String  ) : PrimaryStat {
+    override fun setPrimaryStat(runeStars : Int, primaryStatValue : Int   ) : PrimaryStat {
 
-        if (stringVal.contains(PRIMARY_STAT_TEXT) && !stringVal.contains('%')) {
-            var value =
-                stringVal.substringAfter(PRIMARY_STAT_TEXT).substringAfter('+').substringBefore('+').replace(" ", "")
-                    .toIntOrNull()
-      
-
-            if (value != null){
-                when(runeStars){
-                    1 -> PRIMARY = DefenceFlatOne(value)
-                    2 -> PRIMARY = DefenceFlatTwo(value)
-                    3 -> PRIMARY = DefenceFlatThree(value)
-                    4 -> PRIMARY = DefenceFlatFour(value)
-                    5 -> PRIMARY = DefenceFlatFive(value)
-                    6 -> PRIMARY = DefenceFlatSix(value)
-                    else ->{
-                        PRIMARY = Primary(0)
-                    }
-                }
-            }else{
-                PRIMARY =  Primary(0)
+        when(runeStars){
+            1 -> PRIMARY = DefenceFlatOne(primaryStatValue)
+            2 -> PRIMARY = DefenceFlatTwo(primaryStatValue)
+            3 -> PRIMARY = DefenceFlatThree(primaryStatValue)
+            4 -> PRIMARY = DefenceFlatFour(primaryStatValue)
+            5 -> PRIMARY = DefenceFlatFive(primaryStatValue)
+            6 -> PRIMARY = DefenceFlatSix(primaryStatValue)
+            else ->{
+                PRIMARY = Primary(0)
             }
-
-        }else{
-            PRIMARY =  Primary(0)
         }
+
 
         return this
     }
@@ -89,10 +66,8 @@ class DefenceFlat: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 3
-        override var MAX_STAT = 54
-        override var EACH_LEVEL = 3f
-        override var LAST_LEVEL = 9
+          override var statsList:  Array<Int> = arrayOf(3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,54)
+ 
 
     }
 
@@ -103,10 +78,8 @@ class DefenceFlat: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 5
-        override var MAX_STAT = 74
-        override var EACH_LEVEL = 4f
-        override var LAST_LEVEL = 13
+        override var statsList:  Array<Int> = arrayOf(5,9,13,17,21,25,29,33,37,41,45,49,53,57,61,74)
+
 
     }
 
@@ -117,10 +90,7 @@ class DefenceFlat: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 7
-        override var MAX_STAT = 93
-        override var EACH_LEVEL = 5f
-        override var LAST_LEVEL = 16
+        override var statsList:  Array<Int> = arrayOf(7,13,17,22,27,32,37,42,47,52,57,62,67,72,77,93)
 
     }
 
@@ -131,10 +101,8 @@ class DefenceFlat: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 10
-        override var MAX_STAT = 112
-        override var EACH_LEVEL = 6f
-        override var LAST_LEVEL = 18
+        override var statsList:  Array<Int> = arrayOf(10,16,22,28,34,40,46,52,58,64,70,76,82,88,94,112)
+
 
     }
 
@@ -145,10 +113,9 @@ class DefenceFlat: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 15
-        override var MAX_STAT = 135
-        override var EACH_LEVEL = 7f
-        override var LAST_LEVEL = 22
+        override var statsList:  Array<Int> = arrayOf(15,22,29,36,43,50,57,64,71,78,85,92,99,106,113,135)
+
+
 
     }
 
@@ -159,10 +126,8 @@ class DefenceFlat: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 22
-        override var MAX_STAT = 160
-        override var EACH_LEVEL = 8f
-        override var LAST_LEVEL = 26
+        override var statsList:  Array<Int> = arrayOf(22,30,38,46,54,62,70,78,86,94,102,110,118,126,134,160)
+
 
     }
 

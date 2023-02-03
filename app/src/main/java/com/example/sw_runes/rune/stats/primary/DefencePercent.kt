@@ -12,67 +12,44 @@ class DefencePercent: PrimaryStat() {
         return stringVal.contains(PRIMARY_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT)&& stringVal.contains('+')
     }
 
-    override fun setStarByPrimaryStat(runeLevel : Int, stringVal: String ) :Int  {
+    override fun setStarByPrimaryStat(runeLevel : Int, primaryStatValue: Int ) :Int  {
 
-        if (stringVal.contains(PRIMARY_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT)&& stringVal.contains('+')){
-            var value = stringVal.substringAfter(PRIMARY_STAT_TEXT).substringAfter('+').substringBefore('%').replace(" ","").toIntOrNull()
-
-            if (value!=  null ){
 
                 var DefencePercentList : MutableList<Primary> = mutableListOf(
-                    DefencePercentSix(value),
-                    DefencePercentFive(value),
-                    DefencePercentFour(value),
-                    DefencePercentThree(value),
-                    DefencePercentTwo(value),
-                    DefencePercentOne(value),
+                    DefencePercentSix(primaryStatValue),
+                    DefencePercentFive(primaryStatValue),
+                    DefencePercentFour(primaryStatValue),
+                    DefencePercentThree(primaryStatValue),
+                    DefencePercentTwo(primaryStatValue),
+                    DefencePercentOne(primaryStatValue),
 
                     )
 
                 DefencePercentList.forEach {
 
-                    if ( it.checkPrimaryWithLevel(value,runeLevel)){
+                    if ( it.checkPrimaryWithLevel(primaryStatValue,runeLevel)){
                         return it.STARS
                     }
 
                 }
 
                 return RuneStar.NaN
-            }else{
-                return  RuneStar.NaN
-            }
-        }else{
-            return  RuneStar.NaN
-        }
+
     }
 
 
-    override fun setPrimaryStat(runeStars : Int, stringVal: String  ) : PrimaryStat {
+    override fun setPrimaryStat(runeStars : Int, primaryStatValue : Int   ) : PrimaryStat {
 
-        if (stringVal.contains(PRIMARY_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT) && stringVal.contains('%')) {
-            var value =
-                stringVal.substringAfter(PRIMARY_STAT_TEXT).substringAfter('+').substringBefore('%').replace(" ", "")
-                    .toIntOrNull()
-
-
-            if (value != null){
-                when(runeStars){
-                    1 -> PRIMARY = DefencePercentOne(value)
-                    2 -> PRIMARY = DefencePercentTwo(value)
-                    3 -> PRIMARY = DefencePercentThree(value)
-                    4 -> PRIMARY = DefencePercentFour(value)
-                    5 -> PRIMARY = DefencePercentFive(value)
-                    6 -> PRIMARY = DefencePercentSix(value)
-                    else ->{
-                        PRIMARY = Primary(0)
-                    }
-                }
-            }else{
-                PRIMARY =  Primary(0)
+        when(runeStars){
+            1 -> PRIMARY = DefencePercentOne(primaryStatValue)
+            2 -> PRIMARY = DefencePercentTwo(primaryStatValue)
+            3 -> PRIMARY = DefencePercentThree(primaryStatValue)
+            4 -> PRIMARY = DefencePercentFour(primaryStatValue)
+            5 -> PRIMARY = DefencePercentFive(primaryStatValue)
+            6 -> PRIMARY = DefencePercentSix(primaryStatValue)
+            else ->{
+                PRIMARY = Primary(0)
             }
-
-        }else{
-            PRIMARY =  Primary(0)
         }
 
         return this
@@ -87,10 +64,8 @@ class DefencePercent: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 1
-        override var MAX_STAT = 54
-        override var EACH_LEVEL = 1f
-        override var LAST_LEVEL = 3
+        override var statsList:  Array<Int> = arrayOf(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,18)
+
 
     }
 
@@ -103,10 +78,8 @@ class DefencePercent: PrimaryStat() {
         }
 
 
-        override var BASE_STAT= 2
-        override var MAX_STAT = 54
-        override var EACH_LEVEL = 1f
-        override var LAST_LEVEL = 4
+        override var statsList:  Array<Int> = arrayOf(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20)
+
 
     }
 
@@ -117,10 +90,8 @@ class DefencePercent: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 4
-        override var MAX_STAT = 38
-        override var EACH_LEVEL = 2f
-        override var LAST_LEVEL = 6
+        override var statsList:  Array<Int> = arrayOf(4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,38)
+
 
     }
 
@@ -131,10 +102,8 @@ class DefencePercent: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 5
-        override var MAX_STAT = 43
-        override var EACH_LEVEL = 2.25f
-        override var LAST_LEVEL = 7
+        override var statsList:  Array<Int> = arrayOf(5,7,9,11,14,16,18,20,23,25,27,29,32,34,36,43)
+
 
     }
 
@@ -145,10 +114,8 @@ class DefencePercent: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 8
-        override var MAX_STAT = 51
-        override var EACH_LEVEL = 2.5f
-        override var LAST_LEVEL = 8
+        override var statsList:  Array<Int> = arrayOf(8,10,13,15,18,20,23,25,28,30,33,35,38,40,43,51)
+
 
     }
 
@@ -160,10 +127,8 @@ class DefencePercent: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 11
-        override var MAX_STAT = 63
-        override var EACH_LEVEL = 3f
-        override var LAST_LEVEL = 10
+        override var statsList:  Array<Int> = arrayOf(11,14,19,20,23,26,29,32,35,38,41,44,47,50,53,63)
+
 
     }
 

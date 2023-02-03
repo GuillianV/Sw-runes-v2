@@ -14,67 +14,46 @@ class Accuracy : PrimaryStat() {
         return stringVal.contains(PRIMARY_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT)&& stringVal.contains('+')
     }
 
-    override fun setStarByPrimaryStat(runeLevel : Int, stringVal: String ) :Int  {
+    override fun setStarByPrimaryStat(runeLevel : Int, primaryStatValue: Int ) :Int  {
 
-        if (checkPrimaryStat(stringVal)){
-            var value = stringVal.substringAfter(PRIMARY_STAT_TEXT).substringAfter('+').substringBefore('%').replace(" ","").toIntOrNull()
-
-            if (value!=  null ){
 
                 var attackFlatList : MutableList<Primary> = mutableListOf(
-                    AccuracyOne(value),
-                    AccuracyTwo(value),
-                    AccuracyThree(value),
-                    AccuracyFour(value),
-                    AccuracyFive(value),
-                    AccuracySix(value),
+                    AccuracyOne(primaryStatValue),
+                    AccuracyTwo(primaryStatValue),
+                    AccuracyThree(primaryStatValue),
+                    AccuracyFour(primaryStatValue),
+                    AccuracyFive(primaryStatValue),
+                    AccuracySix(primaryStatValue),
 
                     )
 
                 attackFlatList.forEach {
 
-                    if ( it.checkPrimaryWithLevel(value,runeLevel)){
+                    if ( it.checkPrimaryWithLevel(primaryStatValue,runeLevel)){
                         return it.STARS
                     }
 
                 }
 
                 return RuneStar.NaN
-            }else{
-                return  RuneStar.NaN
-            }
-        }else{
-            return  RuneStar.NaN
-        }
+
     }
 
 
-    override fun setPrimaryStat(runeStars : Int, stringVal: String  ) : PrimaryStat {
-
-        if (checkPrimaryStat(stringVal)) {
-            var value =
-                stringVal.substringAfter(PRIMARY_STAT_TEXT).substringAfter('+').substringBefore('%').replace(" ", "")
-                    .toIntOrNull()
+    override fun setPrimaryStat(runeStars : Int, primaryStatValue : Int
+   ) : PrimaryStat {
 
 
-            if (value != null){
-                when(runeStars){
-                    1 -> PRIMARY = AccuracyOne(value)
-                    2 -> PRIMARY = AccuracyTwo(value)
-                    3 -> PRIMARY = AccuracyThree(value)
-                    4 -> PRIMARY = AccuracyFour(value)
-                    5 -> PRIMARY = AccuracyFive(value)
-                    6 -> PRIMARY = AccuracySix(value)
-                    else ->{
-                        PRIMARY = Primary(0)
-                    }
-                }
-            }else{
-                PRIMARY =  Primary(0)
+        when(runeStars){
+            1 -> PRIMARY = AccuracyOne(primaryStatValue)
+            2 -> PRIMARY = AccuracyTwo(primaryStatValue)
+            3 -> PRIMARY = AccuracyThree(primaryStatValue)
+            4 -> PRIMARY = AccuracyFour(primaryStatValue)
+            5 -> PRIMARY = AccuracyFive(primaryStatValue)
+            6 -> PRIMARY = AccuracySix(primaryStatValue)
+            else ->{
+                PRIMARY = Primary(0)
             }
-
-        }else{
-            PRIMARY =  Primary(0)
         }
 
         return this
@@ -89,10 +68,8 @@ class Accuracy : PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 1
-        override var MAX_STAT = 18
-        override var EACH_LEVEL = 1f
-        override var LAST_LEVEL = 3
+        override var statsList:  Array<Int> = arrayOf(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,18)
+
 
     }
 
@@ -105,10 +82,8 @@ class Accuracy : PrimaryStat() {
         }
 
 
-        override var BASE_STAT= 2
-        override var MAX_STAT = 20
-        override var EACH_LEVEL = 1f
-        override var LAST_LEVEL = 4
+        override var statsList:  Array<Int> = arrayOf(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20)
+
 
     }
 
@@ -119,10 +94,8 @@ class Accuracy : PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 4
-        override var MAX_STAT = 38
-        override var EACH_LEVEL = 2f
-        override var LAST_LEVEL = 6
+        override var statsList:  Array<Int> = arrayOf(4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,38)
+
 
     }
 
@@ -133,10 +106,8 @@ class Accuracy : PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 5
-        override var MAX_STAT = 44
-        override var EACH_LEVEL = 2.25f
-        override var LAST_LEVEL = 7
+        override var statsList:  Array<Int> = arrayOf(6,8,10,12,15,17,19,21,24,26,28,30,33,35,37,44)
+
 
     }
 
@@ -147,10 +118,9 @@ class Accuracy : PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 8
-        override var MAX_STAT = 51
-        override var EACH_LEVEL = 2.5f
-        override var LAST_LEVEL = 8
+        override var statsList:  Array<Int> = arrayOf(9,11,14,16,19,21,24,26,29,31,34,36,39,41,44,51)
+
+
 
     }
 
@@ -162,10 +132,8 @@ class Accuracy : PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var BASE_STAT= 12
-        override var MAX_STAT = 64
-        override var EACH_LEVEL = 3f
-        override var LAST_LEVEL = 10
+        override var statsList:  Array<Int> = arrayOf(12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,64)
+
 
     }
 
