@@ -17,35 +17,19 @@ class SubCritiqRate: SubStat() {
     }
 
 
-    override fun setSubStat(runeStars : Int, stringVal: String, primaryStat: PrimaryStat ) : SubStat {
+    override fun setSubStat(runeStars : Int, subStatValue: Int ) : SubStat {
 
-        if (!checkSubStat(stringVal,primaryStat)){
-            return  this
-        }
-
-
-        val nonNumber = "[^0-9]".toRegex()
-        var value : Int? = null
-        if (!stringVal.contains("Set"))
-           value = stringVal.substringAfter(SUB_STAT_TEXT).replace(nonNumber, "").toIntOrNull()
-
-            if (value != null){
-                when(runeStars){
-                    1 ->  SUB = SubCritiqRateOne(value) ;
-                    2 -> SUB = SubCritiqRateTwo(value);
-                    3 -> SUB = SubCritiqRateThree(value);
-                    4 -> SUB = SubCritiqRateFour(value);
-                    5 -> SUB = SubCritiqRateFive(value);
-                    6 -> SUB = SubCritiqRateSix(value);
-                    else ->{
-                        SUB = Sub(0)
-                    }
-                }
-            }else{
-                SUB =  Sub(0)
+        when(runeStars){
+            1 ->  SUB = SubCritiqRateOne(subStatValue) ;
+            2 -> SUB = SubCritiqRateTwo(subStatValue);
+            3 -> SUB = SubCritiqRateThree(subStatValue);
+            4 -> SUB = SubCritiqRateFour(subStatValue);
+            5 -> SUB = SubCritiqRateFive(subStatValue);
+            6 -> SUB = SubCritiqRateSix(subStatValue);
+            else ->{
+                SUB = Sub(0)
             }
-
-        
+        }
 
         return this
     }

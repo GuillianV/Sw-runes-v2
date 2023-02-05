@@ -17,35 +17,19 @@ class SubAccuracy: SubStat() {
     }
 
 
-    override fun setSubStat(runeStars : Int, stringVal: String, primaryStat: PrimaryStat ) : SubStat {
+    override fun setSubStat(runeStars : Int, subStatValue: Int ) : SubStat {
 
-        if (!checkSubStat(stringVal,primaryStat)){
-            return  this
-        }
-            val nonNumber = "[^0-9]".toRegex()
-        var value : Int? = null
-        if (!stringVal.contains("Set"))
-           value = stringVal.substringAfter(SUB_STAT_TEXT).replace(nonNumber, "").toIntOrNull()
-
-      
-
-            if (value != null){
-                when(runeStars){
-                    1 ->  SUB = SubAccuracyOne(value) ;
-                    2 -> SUB = SubAccuracyTwo(value);
-                    3 -> SUB = SubAccuracyThree(value);
-                    4 -> SUB = SubAccuracyFour(value);
-                    5 -> SUB = SubAccuracyFive(value);
-                    6 -> SUB = SubAccuracySix(value);
-                    else ->{
-                        SUB = Sub(0)
-                    }
-                }
-            }else{
-                SUB =  Sub(0)
+        when(runeStars){
+            1 ->  SUB = SubAccuracyOne(subStatValue) ;
+            2 -> SUB = SubAccuracyTwo(subStatValue);
+            3 -> SUB = SubAccuracyThree(subStatValue);
+            4 -> SUB = SubAccuracyFour(subStatValue);
+            5 -> SUB = SubAccuracyFive(subStatValue);
+            6 -> SUB = SubAccuracySix(subStatValue);
+            else ->{
+                SUB = Sub(0)
             }
-
-        
+        }
 
         return this
     }

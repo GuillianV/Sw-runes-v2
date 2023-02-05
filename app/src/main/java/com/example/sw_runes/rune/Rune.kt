@@ -11,6 +11,7 @@ import com.example.sw_runes.rune.rarity.Rarity
 import com.example.sw_runes.services.RuneAnalyzerService
 import com.example.sw_runes.sw.rune.emplacement.Emplacement
 import com.example.sw_runes.sw.rune.stats.primary.PrimaryStat
+import com.example.sw_runes.sw.rune.stats.sub.SubStat
 import com.example.sw_runes.utils.StringUtil
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
@@ -45,17 +46,18 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
         recognizer.process(inputImage).addOnSuccessListener { visionText ->
 
 
-            var testBlocksSorted : List<Text.TextBlock> = visionText.textBlocks.sortedWith(compareBy { it.boundingBox?.top })
+            var textBlocksSorted : List<Text.TextBlock> = visionText.textBlocks.sortedWith(compareBy { it.boundingBox?.top })
 
-            if(!setRuneBaseStats(testBlocksSorted)){
+            if(!setRuneBaseStats(textBlocksSorted)){
 
             }
 
-            if(!setPrimaryStat(testBlocksSorted))
+            if(!setPrimaryStat(textBlocksSorted))
             {
 
             }
 
+            setSubStats(textBlocksSorted)
 
             runeAnalyzerService.mutableBubbleStatus.value = TapStatus.Ready
 
@@ -115,5 +117,41 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
 
         return (runeStar.NUMBER != RuneStar.NaN && runePrimaryStat.PRIMARY.ACTUAL_STAT != 0)
     }
+
+
+    private fun setSubStats(textBlocks: List<Text.TextBlock>){
+
+        var subStats : MutableList<SubStat> = mutableListOf()
+        textBlocks.forEach { textblock ->
+            textblock.text.split("\n").forEach { text ->
+                runeEmplacement.AVAILABLE_SUB_STATS.forEach { secondaryStat ->
+                    if(secondaryStat.checkSubStat(text,runePrimaryStat)){
+
+                        var subText =  if(text.count { it == '+' } >= 2) {
+                            var firstVal =  (text.substringAfter("+").substringBefore("+")).toIntOrNull()
+                            var secondVal =  (text.substringAfter("+").substringAfter("+")).toIntOrNull()
+                            (secondVal?.let { firstVal?.plus(it) }).toString()
+                        }else text
+
+                        StringUtil.getOnlyNumber(subText)?.let { secondaryStatValue ->
+                            var subStat = secondaryStat.setSubStat(runeStar.NUMBER, secondaryStatValue)
+                            if (runePrimaryStat.PRIMARY_STAT_TEXT != subStat.SUB_STAT_TEXT || subStat.SECONDARY_STAT_TEXT != runePrimaryStat.SECONDARY_STAT_TEXT){
+
+                                if (subStats.count() == 0)
+                                    subStats.add(subStat)
+                                else
+                                    if(subStats.count ({substatInside->  (substatInside.SUB_STAT_TEXT == subStat.SUB_STAT_TEXT && substatInside.SECONDARY_STAT_TEXT == subStat.SECONDARY_STAT_TEXT) }) == 0 )
+                                        subStats.add(subStat)
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        println()
+    }
+
 
 }

@@ -17,35 +17,19 @@ class SubHealthPercent: SubStat() {
     }
 
 
-    override fun setSubStat(runeStars : Int, stringVal: String, primaryStat: PrimaryStat ) : SubStat {
+    override fun setSubStat(runeStars : Int, subStatValue: Int ) : SubStat {
 
-        if (!checkSubStat(stringVal,primaryStat)){
-            return  this
-        }
-            val nonNumber = "[^0-9]".toRegex()
-        var value : Int? = null
-        if (!stringVal.contains("Set"))
-           value = stringVal.substringAfter(SUB_STAT_TEXT).replace(nonNumber, "").toIntOrNull()
-
-      
-
-            if (value != null){
-                when(runeStars){
-                    1 ->  SUB = SubHealthPercentOne(value) ;
-                    2 -> SUB = SubHealthPercentTwo(value);
-                    3 -> SUB = SubHealthPercentThree(value);
-                    4 -> SUB = SubHealthPercentFour(value);
-                    5 -> SUB = SubHealthPercentFive(value);
-                    6 -> SUB = SubHealthPercentSix(value);
-                    else ->{
-                        SUB = Sub(0)
-                    }
-                }
-            }else{
-                SUB =  Sub(0)
+        when(runeStars){
+            1 ->  SUB = SubHealthPercentOne(subStatValue) ;
+            2 -> SUB = SubHealthPercentTwo(subStatValue);
+            3 -> SUB = SubHealthPercentThree(subStatValue);
+            4 -> SUB = SubHealthPercentFour(subStatValue);
+            5 -> SUB = SubHealthPercentFive(subStatValue);
+            6 -> SUB = SubHealthPercentSix(subStatValue);
+            else ->{
+                SUB = Sub(0)
             }
-
-        
+        }
 
         return this
     }

@@ -26,19 +26,19 @@ class RuneStar(star:Int) {
     companion object{
 
         val NaN = 0
-        val Nan_IMAGE = R.drawable.rune_emplacement_one
+        val Nan_IMAGE = R.drawable.rune_star_one
         val ONE = 1
-        val ONE_IMAGE = R.drawable.rune_emplacement_one
+        val ONE_IMAGE = R.drawable.rune_star_one
         val TWO = 2
-        val TWO_IMAGE = R.drawable.rune_emplacement_one
+        val TWO_IMAGE = R.drawable.rune_star_two
         val THREE = 3
-        val THREE_IMAGE = R.drawable.rune_emplacement_one
+        val THREE_IMAGE = R.drawable.rune_star_three
         val FOUR = 4
-        val FOUR_IMAGE = R.drawable.rune_emplacement_one
+        val FOUR_IMAGE = R.drawable.rune_star_four
         val FIVE = 5
-        val FIVE_IMAGE = R.drawable.rune_emplacement_one
+        val FIVE_IMAGE = R.drawable.rune_star_five
         val SIX = 6
-        val SIX_IMAGE = R.drawable.rune_emplacement_one
+        val SIX_IMAGE = R.drawable.rune_star_six
         val ANCIENT = 7
 
     }

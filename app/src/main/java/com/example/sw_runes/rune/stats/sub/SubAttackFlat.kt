@@ -17,37 +17,19 @@ class SubAttackFlat: SubStat() {
     }
 
 
-    override fun setSubStat(runeStars : Int, stringVal: String, primaryStat: PrimaryStat ) : SubStat {
+    override fun setSubStat(runeStars : Int, subStatValue: Int ) : SubStat {
 
-        if (!checkSubStat(stringVal,primaryStat)){
-            return  this
-        }
-
-            val nonNumber = "[^0-9]".toRegex()
-        var value : Int? = null
-        if (!stringVal.contains("Set"))
-            value = stringVal.substringAfter(SUB_STAT_TEXT).replace(nonNumber, "").toIntOrNull()
-
-
-
-
-        if (value != null){
-                when(runeStars){
-                    1 ->  SUB = SubAttackFlatOne(value) ;
-                    2 -> SUB = SubAttackFlatTwo(value);
-                    3 -> SUB = SubAttackFlatThree(value);
-                    4 -> SUB = SubAttackFlatFour(value);
-                    5 -> SUB = SubAttackFlatFive(value);
-                    6 -> SUB = SubAttackFlatSix(value);
-                    else ->{
-                        SUB = Sub(0)
-                    }
-                }
-            }else{
-                SUB =  Sub(0)
+        when(runeStars){
+            1 ->  SUB = SubAttackFlatOne(subStatValue) ;
+            2 -> SUB = SubAttackFlatTwo(subStatValue);
+            3 -> SUB = SubAttackFlatThree(subStatValue);
+            4 -> SUB = SubAttackFlatFour(subStatValue);
+            5 -> SUB = SubAttackFlatFive(subStatValue);
+            6 -> SUB = SubAttackFlatSix(subStatValue);
+            else ->{
+                SUB = Sub(0)
             }
-
-        
+        }
 
 
 

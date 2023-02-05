@@ -17,35 +17,20 @@ class SubAttackPercent: SubStat() {
     }
 
 
-    override fun setSubStat(runeStars : Int, stringVal: String, primaryStat: PrimaryStat ) : SubStat {
+    override fun setSubStat(runeStars : Int, subStatValue: Int ) : SubStat {
 
-        if (!checkSubStat(stringVal,primaryStat)){
-            return  this
-        }
-            val nonNumber = "[^0-9]".toRegex()
-        var value : Int? = null
-        if (!stringVal.contains("Set"))
-           value = stringVal.substringAfter(SUB_STAT_TEXT).replace(nonNumber, "").toIntOrNull()
-
-      
-
-            if (value != null){
-                when(runeStars){
-                    1 ->  SUB = SubAttackPercentOne(value) ;
-                    2 -> SUB = SubAttackPercentTwo(value);
-                    3 -> SUB = SubAttackPercentThree(value);
-                    4 -> SUB = SubAttackPercentFour(value);
-                    5 -> SUB = SubAttackPercentFive(value);
-                    6 -> SUB = SubAttackPercentSix(value);
-                    else ->{
-                        SUB = Sub(0)
-                    }
-                }
-            }else{
-                SUB =  Sub(0)
+        when(runeStars){
+            1 ->  SUB = SubAttackPercentOne(subStatValue) ;
+            2 -> SUB = SubAttackPercentTwo(subStatValue);
+            3 -> SUB = SubAttackPercentThree(subStatValue);
+            4 -> SUB = SubAttackPercentFour(subStatValue);
+            5 -> SUB = SubAttackPercentFive(subStatValue);
+            6 -> SUB = SubAttackPercentSix(subStatValue);
+            else ->{
+                SUB = Sub(0)
             }
+        }
 
-        
 
         return this
     }

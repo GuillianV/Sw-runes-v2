@@ -17,35 +17,19 @@ class SubCritiqDamage: SubStat() {
     }
 
 
-    override fun setSubStat(runeStars : Int, stringVal: String, primaryStat: PrimaryStat ) : SubStat {
+    override fun setSubStat(runeStars : Int, subStatValue: Int ) : SubStat {
 
-        if (!checkSubStat(stringVal,primaryStat)){
-            return  this
-        }
-            val nonNumber = "[^0-9]".toRegex()
-        var value : Int? = null
-        if (!stringVal.contains("Set"))
-           value = stringVal.substringAfter(SUB_STAT_TEXT).replace(nonNumber, "").toIntOrNull()
-
-      
-
-            if (value != null){
-                when(runeStars){
-                    1 ->  SUB = SubCritiqDamageOne(value) ;
-                    2 -> SUB = SubCritiqDamageTwo(value);
-                    3 -> SUB = SubCritiqDamageThree(value);
-                    4 -> SUB = SubCritiqDamageFour(value);
-                    5 -> SUB = SubCritiqDamageFive(value);
-                    6 -> SUB = SubCritiqDamageSix(value);
-                    else ->{
-                        SUB = Sub(0)
-                    }
-                }
-            }else{
-                SUB =  Sub(0)
+        when(runeStars){
+            1 ->  SUB = SubCritiqDamageOne(subStatValue) ;
+            2 -> SUB = SubCritiqDamageTwo(subStatValue);
+            3 -> SUB = SubCritiqDamageThree(subStatValue);
+            4 -> SUB = SubCritiqDamageFour(subStatValue);
+            5 -> SUB = SubCritiqDamageFive(subStatValue);
+            6 -> SUB = SubCritiqDamageSix(subStatValue);
+            else ->{
+                SUB = Sub(0)
             }
-
-        
+        }
 
         return this
     }

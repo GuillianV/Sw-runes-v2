@@ -16,35 +16,19 @@ class SubSpeed: SubStat() {
     }
 
 
-    override fun setSubStat(runeStars : Int, stringVal: String, primaryStat: PrimaryStat ) : SubStat {
+    override fun setSubStat(runeStars : Int, subStatValue: Int ) : SubStat {
 
-        if (!checkSubStat(stringVal,primaryStat)){
-            return  this
-        }
-        val nonNumber = "[^0-9]".toRegex()
-        var value : Int? = null
-        if (!stringVal.contains("Set"))
-           value = stringVal.substringAfter(SUB_STAT_TEXT).replace(nonNumber, "").toIntOrNull()
-
-
-
-        if (value != null){
-                when(runeStars){
-                    1 ->  SUB = SubSpeedOne(value) ;
-                    2 -> SUB = SubSpeedTwo(value);
-                    3 -> SUB = SubSpeedThree(value);
-                    4 -> SUB = SubSpeedFour(value);
-                    5 -> SUB = SubSpeedFive(value);
-                    6 -> SUB = SubSpeedSix(value);
-                    else ->{
-                        SUB = Sub(0)
-                    }
-                }
-            }else{
-                SUB =  Sub(0)
+        when(runeStars){
+            1 ->  SUB = SubSpeedOne(subStatValue) ;
+            2 -> SUB = SubSpeedTwo(subStatValue);
+            3 -> SUB = SubSpeedThree(subStatValue);
+            4 -> SUB = SubSpeedFour(subStatValue);
+            5 -> SUB = SubSpeedFive(subStatValue);
+            6 -> SUB = SubSpeedSix(subStatValue);
+            else ->{
+                SUB = Sub(0)
             }
-
-        
+        }
 
         return this
     }

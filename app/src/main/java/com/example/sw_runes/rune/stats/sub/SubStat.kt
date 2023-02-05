@@ -20,7 +20,7 @@ open  class SubStat{
     open var SECONDARY_STAT_TEXT = ""
 
 
-    open  fun setSubStat(runeStars : Int, stringVal: String, primaryStat: PrimaryStat ) :SubStat  {
+    open  fun setSubStat(runeStars : Int, subStatValue: Int ) :SubStat  {
 
         return SubStat()
 
