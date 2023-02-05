@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import com.example.sw_runes.enums.TapStatus
 import com.example.sw_runes.services.extension.Bubble
+import com.example.sw_runes.services.extension.RuneOptimisation
 import com.example.sw_runes.services.extension.ScreenCapture
 import com.example.sw_runes.sw.rune.Rune
 import com.example.sw_runes.utils.Notifications
@@ -23,6 +24,8 @@ class RuneAnalyzerService : LifecycleService() {
 
     lateinit var bubble : Bubble
     lateinit var screenCapture: ScreenCapture
+    lateinit var runeOptimisation: RuneOptimisation
+
 
     var rune : Rune? = null
 
@@ -84,7 +87,21 @@ class RuneAnalyzerService : LifecycleService() {
         val bitmap = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
         rune = Rune(this).setRune(this,bitmap)
 
+    }
 
+    fun showRuneOptimisation(){
+
+        if (rune == null){
+            toastError("Aucune rune trouvé")
+            return
+        }
+
+        runeOptimisation = RuneOptimisation(this,rune!!)
+        runeOptimisation.createRuneOptimisation()
+    }
+
+    fun toastError(message:String){
+        Toast.makeText(this,message,Toast.LENGTH_LONG).show()
     }
 
     override fun onDestroy() {

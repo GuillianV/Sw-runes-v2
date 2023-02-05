@@ -24,69 +24,497 @@ tools:ignore="Overdraw">
             >
 
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-
-                <ImageView
-                    android:layout_gravity="center"
-                    android:layout_margin="16dp"
-                    android:layout_width="120dp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_height="120dp"
-                    android:foreground="@drawable/rune_emplacement_one"
-                    android:background="@drawable/background_rarity_legendaire" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.3"
-                    android:fontFamily="@font/inter_bold"
-                    android:gravity="center"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:text="+15 Rune Némésis" />
-
-                <ImageView
-                    android:layout_weight="1"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:foreground="@drawable/rune_star_six" />
-
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:background="@drawable/optimization_layout"
-                    android:orientation="vertical">
-
-
-
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <LinearLayout
-                android:layout_weight="1"
+            <RelativeLayout
+                android:id="@+id/layout_relative"
+                android:layout_weight="0.7"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
-            </LinearLayout>
 
+                android:orientation="vertical">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content">
+
+
+
+                <ImageView
+                    android:id="@+id/iv_rune_emplacement_rarity"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/background_rarity_legendaire"
+                    android:foreground="@drawable/rune_emplacement_one" />
+
+                <TextView
+                    android:id="@+id/tv_rune_level"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium"
+                    android:textColor="#ff000000"
+                    android:paddingTop="8dp"
+                    android:textSize="40px"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="bottom"
+                    android:text="+15 Rune Némésis"
+                    android:layout_below="@+id/iv_rune_emplacement_rarity"
+                     />
+
+                    <ImageView
+                        android:id="@+id/im_rune_stars"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tv_rune_level"
+
+                        android:layout_centerInParent="true"
+                        android:adjustViewBounds="true"
+                        android:maxHeight="20dp"
+                        android:scaleType="fitCenter"/>
+
+
+                    <RelativeLayout
+
+                        android:id="@+id/cl_rune_primary_stat"
+                        android:layout_width="match_parent"
+                        android:layout_height="350px"
+                        android:layout_below="@+id/im_rune_stars"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:orientation="vertical">
+
+
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/optimization_layout" />
+
+
+                        <TextView
+                            android:id="@+id/tv_main_stat_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
+                            android:fontFamily="@font/inter_regular"
+                            android:paddingLeft="16dp"
+                            android:text="Main Stat"
+                            android:textColor="#ff52538C"
+                            android:textSize="16sp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                           />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_below="@+id/tv_main_stat_title"
+                            android:orientation="vertical">
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+
+                                android:gravity="bottom"
+                                android:orientation="horizontal"
+                                android:paddingLeft="16dp"
+                                android:paddingRight="16dp"
+
+                                >
+
+                                <TextView
+                                    android:id="@+id/rune_primary_description"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:fontFamily="@font/inter_regular"
+                                    android:text="PV"
+                                    android:textColor="#ff000000"
+                                    android:textSize="45px"
+
+                                    />
+
+                                <TextView
+                                    android:id="@+id/rune_primary_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.5"
+                                    android:fontFamily="@font/inter_regular"
+                                    android:text="+2048"
+                                    android:textColor="#ff000000"
+                                    android:textSize="45px"
+                                    android:gravity="end"
+
+                                    />
+
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+
+                    </RelativeLayout>
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:src="@drawable/divider"
+
+                />
+
+            <RelativeLayout
+                android:layout_weight="0.7"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+
+                android:orientation="vertical">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content">
+
+
+
+
+                    <TextView
+                        android:id="@+id/rune_substats_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_medium"
+                        android:textColor="#ff000000"
+                        android:paddingTop="8dp"
+                        android:textSize="40px"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="bottom"
+                        android:text="Sub Stats Optimisation"
+                        />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@+id/rune_substats_title"
+                        android:id="@+id/ly_substats"
+                        android:orientation="vertical">
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="bottom"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="4dp"
+                            >
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_propriete_1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:gravity="start"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+
+                                />
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_value_1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+                                android:gravity="center"         />
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_optimisation_1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+                                android:gravity="end"         />
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="bottom"
+                            android:layout_marginTop="4dp"
+                            android:orientation="horizontal"
+                            >
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_propriete_2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:gravity="start"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+
+                                />
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_value_2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+                                android:gravity="center"         />
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_optimisation_2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+                                android:gravity="end"         />
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="bottom"
+                            android:layout_marginTop="4dp"
+                            android:orientation="horizontal"
+                            >
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_propriete_3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:gravity="start"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+
+                                />
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_value_3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+                                android:gravity="center"         />
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_optimisation_3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+                                android:gravity="end"         />
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="bottom"
+                            android:layout_marginTop="4dp"
+                            android:orientation="horizontal"
+                            >
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_propriete_4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:gravity="start"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+
+                                />
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_value_4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+                                android:gravity="center"         />
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_optimisation_4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+                                android:gravity="end"         />
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="bottom"
+                            android:layout_marginTop="4dp"
+                            android:orientation="horizontal"
+                            >
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_propriete_5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:gravity="start"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+
+                                />
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_value_5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+                                android:gravity="center"         />
+
+                            <TextView
+                                android:id="@+id/tv_rune_sub_optimisation_5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/inter_regular"
+                                android:textColor="#ff000000"
+                                android:textSize="30px"
+                                android:gravity="end"         />
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <RelativeLayout
+
+                        android:id="@+id/rl_rune_optimisation"
+                        android:layout_width="match_parent"
+                        android:layout_height="250px"
+                        android:layout_below="@+id/ly_substats"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:orientation="vertical">
+
+
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/optimization_layout" />
+
+
+                        <TextView
+                            android:id="@+id/tv_optimisation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_regular"
+                            android:paddingTop="8dp"
+                            android:paddingLeft="16dp"
+                            android:text="Optimisation :"
+                            android:textColor="#ff52538C"
+                            android:textSize="16sp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            />
+
+                        <TextView
+                            android:id="@+id/tv_rune_optimisation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tv_optimisation"
+                            android:layout_centerHorizontal="true"
+                            android:fontFamily="@font/inter_medium"
+                            android:shadowColor="#44000000"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="4"
+                            android:textColor="#ffFFD600"
+                            android:paddingTop="15px"
+                            android:textSize="85px"
+                            android:text="3414"
+
+                            />
+
+
+                    </RelativeLayout>
+
+
+
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:src="@drawable/divider"
+
+                />
             <LinearLayout
                 android:layout_weight="1"
                 android:layout_width="0dp"

@@ -18,6 +18,9 @@ open  class SubStat{
     open var SUB : Sub = Sub(0)
     open var SUB_STAT_TEXT = ""
     open var SECONDARY_STAT_TEXT = ""
+    open var POIDS_DEFAULT : Float = 0f
+    open var POIDS_DEFINI : Float = 0f
+
 
 
     open  fun setSubStat(runeStars : Int, subStatValue: Int ) :SubStat  {

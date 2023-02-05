@@ -18,5 +18,5 @@ class EmplacementThree : Emplacement() {
         SubResistance(),SubAttackPercent(),SubDefencePercent(),
         SubHealthPercent(),SubCritiqDamage(),SubCritiqRate(),SubAttackFlat(),SubHealthFlat()
     )
-    override var RUNE_IMAGE: Int = R.drawable.rune_emplacement_three
+    override var RUNE_DRAWABLE: Int = R.drawable.rune_emplacement_three
 }

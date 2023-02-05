@@ -16,5 +16,5 @@ class EmplacementFive : Emplacement() {
         SubResistance(),SubAttackPercent(),SubDefencePercent(),SubHealthPercent(),SubCritiqDamage(),
         SubCritiqRate(),SubAttackFlat(),SubDefenceFlat()
     )
-    override var RUNE_IMAGE: Int = R.drawable.rune_emplacement_five
+    override var RUNE_DRAWABLE: Int = R.drawable.rune_emplacement_five
 }

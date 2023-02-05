@@ -15,5 +15,5 @@ class EmplacementTwo : Emplacement() {
         Speed()
     )
     override var AVAILABLE_SUB_STATS : MutableList<SubStat> = mutableListOf(SubSpeed(),SubAccuracy(),SubResistance(),SubAttackPercent(),SubDefencePercent(),SubHealthPercent(),SubCritiqDamage(),SubCritiqRate(),SubAttackFlat(),SubDefenceFlat(),SubHealthFlat())
-    override var RUNE_IMAGE: Int = R.drawable.rune_emplacement_two
+    override var RUNE_DRAWABLE: Int = R.drawable.rune_emplacement_two
 }

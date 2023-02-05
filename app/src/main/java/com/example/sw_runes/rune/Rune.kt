@@ -6,6 +6,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.example.sw_runes.enums.TapStatus
+import com.example.sw_runes.fragments.RuneOptimisationFragment
 import com.example.sw_runes.rune.RuneRarity
 import com.example.sw_runes.rune.rarity.Rarity
 import com.example.sw_runes.services.RuneAnalyzerService
@@ -17,6 +18,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import kotlinx.coroutines.runBlocking
 
 class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
 
@@ -27,6 +29,7 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
 
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     lateinit var bitmap : Bitmap
+    lateinit var runeOptimisationFragment : RuneOptimisationFragment
 
 
     //Rune params
@@ -36,40 +39,49 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
     var runeStar : RuneStar = RuneStar(0)
     //Rune stats
     var runePrimaryStat : PrimaryStat = PrimaryStat()
-
-
+    var runeSubStatInnate : SubStat = SubStat()
+    var runeSubStats : List<SubStat> = arrayListOf()
 
     fun  setRune(context: Context, _bitmap: Bitmap) : Rune?{
 
+
         bitmap = _bitmap
         val inputImage = InputImage.fromBitmap(_bitmap,0)
+
+
         recognizer.process(inputImage).addOnSuccessListener { visionText ->
 
 
             var textBlocksSorted : List<Text.TextBlock> = visionText.textBlocks.sortedWith(compareBy { it.boundingBox?.top })
 
-            if(!setRuneBaseStats(textBlocksSorted)){
 
+            if(!setRuneBaseStats(textBlocksSorted) || !setPrimaryStat(textBlocksSorted))
+                onNotRuneDetected()
+            else{
+                setSubStats(textBlocksSorted)
+                onRuneDetected()
             }
-
-            if(!setPrimaryStat(textBlocksSorted))
-            {
-
-            }
-
-            setSubStats(textBlocksSorted)
 
             runeAnalyzerService.mutableBubbleStatus.value = TapStatus.Ready
+            _bitmap?.recycle()
 
-            _bitmap!!.recycle()
+
         }.addOnFailureListener { throw Exception("Erreur recognizer") }.addOnCompleteListener {
 
         }
 
-        return this;
+        return this
     }
 
 
+    private fun onRuneDetected(){
+        runeAnalyzerService.showRuneOptimisation()
+
+    }
+
+    private fun onNotRuneDetected(){
+        runeAnalyzerService.toastError("Rune non détecté")
+    }
 
 
 
@@ -128,8 +140,8 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
                     if(secondaryStat.checkSubStat(text,runePrimaryStat)){
 
                         var subText =  if(text.count { it == '+' } >= 2) {
-                            var firstVal =  (text.substringAfter("+").substringBefore("+")).toIntOrNull()
-                            var secondVal =  (text.substringAfter("+").substringAfter("+")).toIntOrNull()
+                            var firstVal =  (StringUtil.getOnlyNumber(text.substringAfter("+").substringBefore("+")))
+                            var secondVal =  (StringUtil.getOnlyNumber(text.substringAfter("+").substringAfter("+")))
                             (secondVal?.let { firstVal?.plus(it) }).toString()
                         }else text
 
@@ -150,7 +162,8 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
             }
         }
 
-        println()
+        runeSubStats = subStats
+
     }
 
 

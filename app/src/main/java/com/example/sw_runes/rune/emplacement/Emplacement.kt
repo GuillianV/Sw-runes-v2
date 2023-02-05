@@ -10,5 +10,5 @@ open class Emplacement {
     open var TRADUCTION = "Emplacement Non trouvé"
     open val AVAILABLE_MAIN_STATS : MutableList<PrimaryStat> = emptyList<PrimaryStat>().toMutableList()
     open val AVAILABLE_SUB_STATS : MutableList<SubStat> = emptyList<SubStat>().toMutableList()
-    open var RUNE_IMAGE = R.drawable.rune_emplacement_nan
+    open var RUNE_DRAWABLE = R.drawable.rune_emplacement_nan
 }

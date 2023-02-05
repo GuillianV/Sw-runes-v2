@@ -12,12 +12,12 @@ class SubSpeed: SubStat() {
     override var SUB_STAT_TEXT = "VIT"
 
     override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean {
-        return (stringVal.contains(SUB_STAT_TEXT) && !stringVal.contains('%') && !primaryStat.PRIMARY_STAT_TEXT.contains(SUB_STAT_TEXT) )
+        return (!stringVal.contains("Set") && stringVal.contains(SUB_STAT_TEXT) && !stringVal.contains('%') && !primaryStat.PRIMARY_STAT_TEXT.contains(SUB_STAT_TEXT) )
     }
 
 
     override fun setSubStat(runeStars : Int, subStatValue: Int ) : SubStat {
-
+        if (SUB.ACTUAL_STAT == 0) return this
         when(runeStars){
             1 ->  SUB = SubSpeedOne(subStatValue) ;
             2 -> SUB = SubSpeedTwo(subStatValue);

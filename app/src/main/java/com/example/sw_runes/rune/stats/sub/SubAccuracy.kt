@@ -13,12 +13,12 @@ class SubAccuracy: SubStat() {
     override var SECONDARY_STAT_TEXT = "%"
 
     override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean {
-        return (stringVal.contains(SUB_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT) && !primaryStat.PRIMARY_STAT_TEXT.contains(SUB_STAT_TEXT) )
+        return (!stringVal.contains("Set") && stringVal.contains(SUB_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT) && !primaryStat.PRIMARY_STAT_TEXT.contains(SUB_STAT_TEXT) )
     }
 
 
     override fun setSubStat(runeStars : Int, subStatValue: Int ) : SubStat {
-
+        if (SUB.ACTUAL_STAT == 0) return this
         when(runeStars){
             1 ->  SUB = SubAccuracyOne(subStatValue) ;
             2 -> SUB = SubAccuracyTwo(subStatValue);
