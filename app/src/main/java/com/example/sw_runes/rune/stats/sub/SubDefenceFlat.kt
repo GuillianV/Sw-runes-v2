@@ -12,7 +12,9 @@ class SubDefenceFlat: SubStat() {
     override var SUB_STAT_TEXT = "DEF"
     override var SECONDARY_STAT_TEXT = ""
 
-    override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean {
+    override var POIDS_DEFAULT : Float = 20f
+    override var POIDS_DEFINI : Float = 0.4f
+override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean {
         return (!stringVal.contains("Set") && stringVal.contains(SUB_STAT_TEXT) && !stringVal.contains("%"))
     }
 

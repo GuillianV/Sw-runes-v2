@@ -70,6 +70,18 @@ open  class SubStat{
         var MIN_STAT = MIN_PROC
         var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD)
 
+
+
+        open fun getPoidsCalculated():Int{
+
+            if (ACTUAL_STAT <= 0)
+                return 0
+
+            return (ACTUAL_STAT * POIDS_DEFAULT * POIDS_DEFINI).toInt()
+
+        }
+
+
         open fun setSubWithLevel(runeLevel: Int, remainingProc: Int){
 
 

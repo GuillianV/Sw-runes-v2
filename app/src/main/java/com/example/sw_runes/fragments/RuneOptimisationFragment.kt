@@ -62,7 +62,7 @@ class RuneOptimisationFragment(_runeAnalyzerService: RuneAnalyzerService, _rune 
             var substat = rune.runeSubStats[0]
             binding.tvRuneSubPropriete1.setText("${substat.SUB_STAT_TEXT}")
             binding.tvRuneSubValue1.setText("+${substat.SUB.ACTUAL_STAT}${substat.SECONDARY_STAT_TEXT}")
-            binding.tvRuneSubOptimisation1.setText("${substat.SUB_STAT_TEXT}")
+            binding.tvRuneSubOptimisation1.setText("${substat.SUB.getPoidsCalculated()}")
 
         }
 
@@ -71,7 +71,7 @@ class RuneOptimisationFragment(_runeAnalyzerService: RuneAnalyzerService, _rune 
             var substat = rune.runeSubStats[1]
             binding.tvRuneSubPropriete2.setText("${substat.SUB_STAT_TEXT}")
             binding.tvRuneSubValue2.setText("+${substat.SUB.ACTUAL_STAT}${substat.SECONDARY_STAT_TEXT}")
-            binding.tvRuneSubOptimisation2.setText("${substat.SUB_STAT_TEXT}")
+            binding.tvRuneSubOptimisation2.setText("${substat.SUB.getPoidsCalculated()}")
 
         }
 
@@ -80,7 +80,7 @@ class RuneOptimisationFragment(_runeAnalyzerService: RuneAnalyzerService, _rune 
             var substat = rune.runeSubStats[2]
             binding.tvRuneSubPropriete3.setText("${substat.SUB_STAT_TEXT}")
             binding.tvRuneSubValue3.setText("+${substat.SUB.ACTUAL_STAT}${substat.SECONDARY_STAT_TEXT}")
-            binding.tvRuneSubOptimisation3.setText("${substat.SUB_STAT_TEXT}")
+            binding.tvRuneSubOptimisation3.setText("${substat.SUB.getPoidsCalculated()}")
 
         }
 
@@ -89,7 +89,7 @@ class RuneOptimisationFragment(_runeAnalyzerService: RuneAnalyzerService, _rune 
             var substat = rune.runeSubStats[3]
             binding.tvRuneSubPropriete4.setText("${substat.SUB_STAT_TEXT}")
             binding.tvRuneSubValue4.setText("+${substat.SUB.ACTUAL_STAT}${substat.SECONDARY_STAT_TEXT}")
-            binding.tvRuneSubOptimisation4.setText("${substat.SUB_STAT_TEXT}")
+            binding.tvRuneSubOptimisation4.setText("${substat.SUB.getPoidsCalculated()}")
 
         }
 
@@ -98,11 +98,16 @@ class RuneOptimisationFragment(_runeAnalyzerService: RuneAnalyzerService, _rune 
             var substat = rune.runeSubStats[4]
             binding.tvRuneSubPropriete5.setText("${substat.SUB_STAT_TEXT}")
             binding.tvRuneSubValue5.setText("+${substat.SUB.ACTUAL_STAT}${substat.SECONDARY_STAT_TEXT}")
-            binding.tvRuneSubOptimisation5.setText("${substat.SUB_STAT_TEXT}")
+            binding.tvRuneSubOptimisation5.setText("${substat.SUB.getPoidsCalculated()}")
 
         }
+        var poidsCumulé : Int = 0
+            rune.runeSubStats.forEach {
 
-        binding.tvRuneOptimisation.setText("Trop forttt")
+                poidsCumulé+=it.SUB.getPoidsCalculated()
+        }
+
+        binding.tvRuneOptimisation.setText(poidsCumulé.toString())
 
 
     }

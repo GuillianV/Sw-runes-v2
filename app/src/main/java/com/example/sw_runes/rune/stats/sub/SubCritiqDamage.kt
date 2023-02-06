@@ -12,8 +12,10 @@ class SubCritiqDamage: SubStat() {
     override var SUB_STAT_TEXT = "Dgts critiq."
     override var SECONDARY_STAT_TEXT = "%"
 
-    override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean {
-        return (!stringVal.contains("Set") && stringVal.contains(SUB_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT)  )
+    override var POIDS_DEFAULT : Float = 57f
+    override var POIDS_DEFINI : Float = 1.3f
+override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean {
+        return (!stringVal.contains("Set") && (stringVal.contains(SUB_STAT_TEXT) || stringVal.contains("Dgts criti") && stringVal.contains(SECONDARY_STAT_TEXT)  ))
     }
 
 

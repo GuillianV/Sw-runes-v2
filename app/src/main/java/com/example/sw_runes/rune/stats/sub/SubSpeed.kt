@@ -10,8 +10,10 @@ class SubSpeed: SubStat() {
 
     override var SUB: Sub = Sub(0)
     override var SUB_STAT_TEXT = "VIT"
+    override var POIDS_DEFAULT : Float = 66.5f
+    override var POIDS_DEFINI : Float = 1.3f
 
-    override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean {
+override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean {
         return (!stringVal.contains("Set") && stringVal.contains(SUB_STAT_TEXT) && !stringVal.contains('%') && !primaryStat.PRIMARY_STAT_TEXT.contains(SUB_STAT_TEXT) )
     }
 
