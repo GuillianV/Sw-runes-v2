@@ -15,7 +15,7 @@ class SubAttackPercent: SubStat() {
     override var POIDS_DEFAULT : Float = 50f
     override var POIDS_DEFINI : Float = 1.3f
 override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean {
-        return (!stringVal.contains("Set") && !stringVal.contains("Set") && stringVal.contains(SUB_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT)  && (primaryStat.PRIMARY_STAT_TEXT != SUB_STAT_TEXT || (primaryStat.PRIMARY_STAT_TEXT.contains(SUB_STAT_TEXT) && !primaryStat.SECONDARY_STAT_TEXT.contains("%"))) )
+        return (!stringVal.contains("Set") &&  (stringVal.contains(SUB_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT)  && (primaryStat.PRIMARY_STAT_TEXT != SUB_STAT_TEXT || (primaryStat.PRIMARY_STAT_TEXT.contains(SUB_STAT_TEXT) && !primaryStat.SECONDARY_STAT_TEXT.contains("%"))) ))
     }
 
 

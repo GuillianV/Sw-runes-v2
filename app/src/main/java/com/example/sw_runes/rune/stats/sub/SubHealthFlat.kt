@@ -15,7 +15,7 @@ class SubHealthFlat: SubStat() {
     override var POIDS_DEFAULT : Float = 1f
     override var POIDS_DEFINI : Float = 0.4f
 override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean {
-        return (!stringVal.contains("Set") && stringVal.contains(SUB_STAT_TEXT) && !stringVal.contains("%") )
+        return (!stringVal.contains("Set") && (stringVal.contains(SUB_STAT_TEXT) && !stringVal.contains("%") ))
     }
 
 
