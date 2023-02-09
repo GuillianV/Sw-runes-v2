@@ -20,19 +20,23 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
 
 
     override fun setSubStat(runeStars : Int, subStatValue: Int ) : SubStat {
-        if (SUB.ACTUAL_STAT == 0) return this
+        var testingSub : SubStat.Sub
+
         when(runeStars){
-            1 ->  SUB = SubAccuracyOne(subStatValue) ;
-            2 -> SUB = SubAccuracyTwo(subStatValue);
-            3 -> SUB = SubAccuracyThree(subStatValue);
-            4 -> SUB = SubAccuracyFour(subStatValue);
-            5 -> SUB = SubAccuracyFive(subStatValue);
-            6 -> SUB = SubAccuracySix(subStatValue);
+            1 -> testingSub = SubAccuracyOne(subStatValue) ;
+            2 -> testingSub = SubAccuracyTwo(subStatValue);
+            3 -> testingSub = SubAccuracyThree(subStatValue);
+            4 -> testingSub = SubAccuracyFour(subStatValue);
+            5 -> testingSub = SubAccuracyFive(subStatValue);
+            6 -> testingSub = SubAccuracySix(subStatValue);
             else ->{
-                SUB = Sub(0)
+                testingSub = Sub(0)
             }
         }
 
+        if (SUB.ACTUAL_STAT != 0 || subStatValue > testingSub.MAX_STAT ) return this
+
+        SUB = testingSub
         return this
     }
 
@@ -45,6 +49,8 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
 
         override var MIN_PROC = 1
         override var MAX_PROC = 2
+        override var MIN_STAT = MIN_PROC
+        override var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD ) +  MAX_MEULE
 
 
     }
@@ -56,6 +62,8 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
 
         override var MIN_PROC = 1
         override var MAX_PROC = 3
+        override var MIN_STAT = MIN_PROC
+        override var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD ) +  MAX_MEULE
 
     }
 
@@ -66,6 +74,8 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
 
         override var MIN_PROC = 2
         override var MAX_PROC = 4
+        override var MIN_STAT = MIN_PROC
+        override var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD ) +  MAX_MEULE
 
     }
 
@@ -77,6 +87,8 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
         override var MIN_PROC = 2
         override var MAX_PROC = 5
 
+        override var MIN_STAT = MIN_PROC
+        override var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD ) +  MAX_MEULE
 
     }
 
@@ -87,6 +99,8 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
 
         override var MIN_PROC = 3
         override var MAX_PROC = 7
+        override var MIN_STAT = MIN_PROC
+        override var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD ) +  MAX_MEULE
 
 
     }
@@ -98,6 +112,8 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
 
         override var MIN_PROC = 4
         override var MAX_PROC = 8
+        override var MIN_STAT = MIN_PROC
+        override var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD ) +  MAX_MEULE
 
     }
 

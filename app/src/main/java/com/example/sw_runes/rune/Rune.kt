@@ -147,7 +147,7 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
 
                         StringUtil.getOnlyNumber(subText)?.let { secondaryStatValue ->
                             var subStat = secondaryStat.setSubStat(runeStar.NUMBER, secondaryStatValue)
-                            if (runePrimaryStat.PRIMARY_STAT_TEXT != subStat.SUB_STAT_TEXT || subStat.SECONDARY_STAT_TEXT != runePrimaryStat.SECONDARY_STAT_TEXT){
+                            if (subStat.SUB.ACTUAL_STAT != 0 && runePrimaryStat.PRIMARY_STAT_TEXT != subStat.SUB_STAT_TEXT || subStat.SECONDARY_STAT_TEXT != runePrimaryStat.SECONDARY_STAT_TEXT){
 
                                 if (subStats.count() == 0)
                                     subStats.add(subStat)
