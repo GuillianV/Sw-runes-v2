@@ -101,13 +101,14 @@ class RuneOptimisationFragment(_runeAnalyzerService: RuneAnalyzerService, _rune 
             binding.tvRuneSubOptimisation5.setText("${substat.SUB.getPoidsCalculated()}")
 
         }
-        var poidsCumulé : Int = 0
-            rune.runeSubStats.forEach {
 
-                poidsCumulé+=it.SUB.getPoidsCalculated()
+        var poidsCumule : Int = 0
+        rune.runeSubStats.forEach {
+
+                poidsCumule+=it.SUB.getPoidsCalculated()
         }
 
-        binding.tvRuneOptimisation.setText(poidsCumulé.toString())
+        binding.tvRuneOptimisation.setText(poidsCumule.toString())
 
 
     }
