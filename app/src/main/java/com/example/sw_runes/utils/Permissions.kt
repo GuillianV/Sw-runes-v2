@@ -36,6 +36,24 @@ class Permissions {
         }
 
 
+        fun isReadExternalStorageGranted(activity: Activity ,context : Context): Boolean {
+            return if (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED
+            ) {
+                true
+            } else {
+                ActivityCompat.requestPermissions(
+                    activity,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    1
+                )
+                false
+            }
+
+        }
+
+
+
 
         fun isManageOverlayGranted(activity: Activity ,context : Context): Boolean {
 

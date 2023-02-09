@@ -15,24 +15,28 @@ class SubHealthPercent: SubStat() {
     override var POIDS_DEFAULT : Float = 50f
     override var POIDS_DEFINI : Float = 1.3f
 override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean {
-        return (!stringVal.contains("Set") && stringVal.contains(SUB_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT)&& ( primaryStat.PRIMARY_STAT_TEXT != SUB_STAT_TEXT ||  (primaryStat.PRIMARY_STAT_TEXT.contains(SUB_STAT_TEXT) && !primaryStat.SECONDARY_STAT_TEXT.contains("%"))) )
+        return (!stringVal.contains("Set") && (stringVal.contains(SUB_STAT_TEXT) && stringVal.contains(SECONDARY_STAT_TEXT)&& ( primaryStat.PRIMARY_STAT_TEXT != SUB_STAT_TEXT ||  (primaryStat.PRIMARY_STAT_TEXT.contains(SUB_STAT_TEXT) && !primaryStat.SECONDARY_STAT_TEXT.contains("%")))) )
     }
 
 
     override fun setSubStat(runeStars : Int, subStatValue: Int ) : SubStat {
-        if (SUB.ACTUAL_STAT != -1) return this
+        var testingSub : SubStat.Sub
+
         when(runeStars){
-            1 ->  SUB = SubHealthPercentOne(subStatValue) ;
-            2 -> SUB = SubHealthPercentTwo(subStatValue);
-            3 -> SUB = SubHealthPercentThree(subStatValue);
-            4 -> SUB = SubHealthPercentFour(subStatValue);
-            5 -> SUB = SubHealthPercentFive(subStatValue);
-            6 -> SUB = SubHealthPercentSix(subStatValue);
+            1 -> testingSub = SubHealthPercentOne(subStatValue) ;
+            2 -> testingSub = SubHealthPercentTwo(subStatValue);
+            3 -> testingSub = SubHealthPercentThree(subStatValue);
+            4 -> testingSub = SubHealthPercentFour(subStatValue);
+            5 -> testingSub = SubHealthPercentFive(subStatValue);
+            6 -> testingSub = SubHealthPercentSix(subStatValue);
             else ->{
-                SUB = Sub(0)
+                testingSub = Sub(0)
             }
         }
 
+        if (SUB.ACTUAL_STAT != 0 || subStatValue > testingSub.MAX_STAT ) return this
+
+        SUB = testingSub
         return this
     }
 
@@ -47,6 +51,9 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
         override var MAX_PROC = 2
 
 
+        override var MAX_MEULE = 10
+        override var MIN_STAT = MIN_PROC
+        override var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD ) +  MAX_MEULE
 
 
     }
@@ -60,7 +67,9 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
         override var MAX_PROC = 3
 
 
-
+        override var MAX_MEULE = 10
+        override var MIN_STAT = MIN_PROC
+        override var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD ) +  MAX_MEULE
 
     }
 
@@ -73,6 +82,9 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
         override var MAX_PROC = 5
 
 
+        override var MAX_MEULE = 10
+        override var MIN_STAT = MIN_PROC
+        override var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD ) +  MAX_MEULE
 
     }
 
@@ -85,6 +97,9 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
         override var MAX_PROC = 6
 
 
+        override var MAX_MEULE = 10  
+        override var MIN_STAT = MIN_PROC
+        override var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD ) +  MAX_MEULE
 
     }
 
@@ -96,7 +111,9 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
         override var MIN_PROC = 4
         override var MAX_PROC = 7
 
-
+        override var MAX_MEULE = 10
+        override var MIN_STAT = MIN_PROC
+        override var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD ) +  MAX_MEULE
 
     }
 
@@ -108,6 +125,9 @@ override fun checkSubStat(stringVal : String, primaryStat: PrimaryStat ):Boolean
         override var MIN_PROC = 5
         override var MAX_PROC = 8
 
+        override var MAX_MEULE = 10
+        override var MIN_STAT = MIN_PROC
+        override var MAX_STAT = MAX_PROC + (MAX_PROC * PROC_QUAD ) +  MAX_MEULE
 
     }
 

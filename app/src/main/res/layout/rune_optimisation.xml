@@ -247,7 +247,7 @@ tools:ignore="Overdraw">
                                 android:fontFamily="@font/inter_regular"
                                 android:textColor="#ff000000"
                                 android:textSize="30px"
-                                android:gravity="center"         />
+                                android:gravity="right"         />
 
                             <TextView
                                 android:id="@+id/tv_rune_sub_optimisation_1"
@@ -292,7 +292,7 @@ tools:ignore="Overdraw">
                                 android:fontFamily="@font/inter_regular"
                                 android:textColor="#ff000000"
                                 android:textSize="30px"
-                                android:gravity="center"         />
+                                android:gravity="right"         />
 
                             <TextView
                                 android:id="@+id/tv_rune_sub_optimisation_2"
@@ -337,7 +337,7 @@ tools:ignore="Overdraw">
                                 android:fontFamily="@font/inter_regular"
                                 android:textColor="#ff000000"
                                 android:textSize="30px"
-                                android:gravity="center"         />
+                                android:gravity="right"         />
 
                             <TextView
                                 android:id="@+id/tv_rune_sub_optimisation_3"
@@ -382,7 +382,7 @@ tools:ignore="Overdraw">
                                 android:fontFamily="@font/inter_regular"
                                 android:textColor="#ff000000"
                                 android:textSize="30px"
-                                android:gravity="center"         />
+                                android:gravity="right"         />
 
                             <TextView
                                 android:id="@+id/tv_rune_sub_optimisation_4"
@@ -427,7 +427,7 @@ tools:ignore="Overdraw">
                                 android:fontFamily="@font/inter_regular"
                                 android:textColor="#ff000000"
                                 android:textSize="30px"
-                                android:gravity="center"         />
+                                android:gravity="right"         />
 
                             <TextView
                                 android:id="@+id/tv_rune_sub_optimisation_5"

@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
+import android.os.Environment
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,8 +19,10 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.sw_runes.models.RecordingViewModel
 import com.example.sw_runes.services.RuneAnalyzerService
 import com.example.sw_runes.ui.theme.*
+import com.example.sw_runes.utils.Permissions
 import com.example.sw_runes.utils.Permissions.Companion.isManageOverlayGranted
 import com.example.sw_runes.utils.Permissions.Companion.isWriteExternalStorageGranted
+import java.io.File
 
 class MainActivity : ComponentActivity() {
 
@@ -37,6 +41,10 @@ class MainActivity : ComponentActivity() {
         val windowInsetsController =
             WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController?.hide(WindowInsetsCompat.Type.systemBars())
+
+
+        Permissions.isReadExternalStorageGranted(this,applicationContext)
+
 
         setContent {
             SwRunesTheme {
