@@ -11,6 +11,7 @@ import androidx.core.util.Pair
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import com.example.sw_runes.enums.TapStatus
+import com.example.sw_runes.rune.RuneAI
 import com.example.sw_runes.services.extension.Bubble
 import com.example.sw_runes.services.extension.RuneOptimisation
 import com.example.sw_runes.services.extension.ScreenCapture
@@ -85,6 +86,9 @@ class RuneAnalyzerService : LifecycleService() {
     fun setRune(bitmapByteArray: ByteArray){
 
         val bitmap = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
+
+        var runeAi : RuneAI = RuneAI(this)
+        runeAi.inherance(bitmap)
         rune = Rune(this).setRune(this,bitmap)
 
     }

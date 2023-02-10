@@ -59,6 +59,21 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService) {
         val outputFeature1 = outputs.outputFeature1AsTensorBuffer
 
 
+        val confidences = outputFeature0.floatArray
+        // find the index of the class with the biggest confidence.
+        // find the index of the class with the biggest confidence.
+        var maxPos = 0
+        var maxConfidence = 0f
+        for (i in confidences.indices) {
+            if (confidences[i] > maxConfidence) {
+                maxConfidence = confidences[i]
+                maxPos = i
+            }
+        }
+        val classes = arrayOf("rune", "norune")
+
+        println(classes[maxPos])
+
 
         model.close()
     }
