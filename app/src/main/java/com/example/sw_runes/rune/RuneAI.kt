@@ -15,34 +15,27 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 
-class RuneAI(_runeAnalyzerService: RuneAnalyzerService) {
+class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmapByteArray : ByteArray) {
 
     val imageSize : Int = 256
 
     var runeAnalyzerService : RuneAnalyzerService
+    var bitmapByteArray : ByteArray
+    private var byteBuffer : ByteBuffer
+
+    val classes = arrayOf("rune", "norune")
 
     init {
         runeAnalyzerService = _runeAnalyzerService
-    }
+        bitmapByteArray = _bitmapByteArray
 
-    fun inherance(_bitmap:Bitmap){
-
-        var image = _bitmap
-
-        val model = RuneDetection.newInstance(runeAnalyzerService)
-
-        val dimension: Int = Math.min(image.getWidth(), image.getHeight())
-        image = ThumbnailUtils.extractThumbnail(image, dimension, dimension)
-
-        image = Bitmap.createScaledBitmap(image, imageSize, imageSize, false)
-
-        // Creates inputs for reference.
-        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, imageSize, imageSize, 3), DataType.FLOAT32)
-        val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3)
+        var bmpLocal = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
+        bmpLocal = Bitmap.createScaledBitmap(bmpLocal, imageSize, imageSize, false)
+        byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3)
         byteBuffer.order(ByteOrder.nativeOrder())
 
         val intValues = IntArray(imageSize * imageSize)
-        image.getPixels(intValues, 0, image.getWidth(), 0, 0, image.getWidth(), image.getHeight())
+        bmpLocal.getPixels(intValues, 0, bmpLocal.getWidth(), 0, 0, bmpLocal.getWidth(), bmpLocal.getHeight())
         var pixel = 0
         //iterate over each pixel and extract R, G, and B values. Add those values individually to the byte buffer.
         //iterate over each pixel and extract R, G, and B values. Add those values individually to the byte buffer.
@@ -55,16 +48,32 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService) {
             }
         }
 
+        bmpLocal?.recycle()
+    }
 
-        inputFeature0.loadBuffer(byteBuffer)
+    fun inherance(){
+
+
+        searchForRune()
+        searchForBbox()
+
+
+    }
+
+    private fun searchForRune(){
+
+        val model = RuneDetection.newInstance(runeAnalyzerService)
+
+        // Creates inputs for reference.
+        val inputFeature = TensorBuffer.createFixedSize(intArrayOf(1, imageSize, imageSize, 3), DataType.FLOAT32)
+        inputFeature.loadBuffer(byteBuffer)
 
         // Runs model inference and gets result.
-        val outputs = model.process(inputFeature0)
-        val outputFeature0 = outputs.outputFeature0AsTensorBuffer
-        val outputFeature1 = outputs.outputFeature1AsTensorBuffer
+        val outputs = model.process(inputFeature)
+        val outputFeatureRune = outputs.outputFeature0AsTensorBuffer
 
 
-        val confidences = outputFeature0.floatArray
+        val confidences = outputFeatureRune.floatArray
         // find the index of the class with the biggest confidence.
         // find the index of the class with the biggest confidence.
         var maxPos = 0
@@ -75,54 +84,51 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService) {
                 maxPos = i
             }
         }
-        val classes = arrayOf("rune", "norune")
-
-        if(classes[maxPos] == "rune"){
-
-
-
-            val modelBB = RuneBounding.newInstance(runeAnalyzerService)
-
-            // Creates inputs for reference.
-                        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 256, 256, 3), DataType.FLOAT32)
-                        inputFeature0.loadBuffer(byteBuffer)
-
-            // Runs model inference and gets result.
-                        val outputs = model.process(inputFeature0)
-                        val outputFeature1 = outputs.outputFeature1AsTensorBuffer
-
-            // Releases model resources if no longer used.
-            modelBB.close()
-
-
-            val resizedBmp: Bitmap = Bitmap.createBitmap(_bitmap, (outputFeature1.floatArray[0] * _bitmap.width).toInt(), (outputFeature1.floatArray[1] * _bitmap.height).toInt(), (outputFeature1.floatArray[2] * _bitmap.width).toInt(), (outputFeature1.floatArray[3] * _bitmap.height).toInt())
-
-            var folderDir : String = "/DCIM/SWrunesStorage/"
-            var mStoreDir: String? = null
-            val externalFilesDir = runeAnalyzerService.getExternalFilesDir(null)
-            if (externalFilesDir != null) {
-                mStoreDir =
-                    Environment.getExternalStorageDirectory().absolutePath.toString() + folderDir
-                val storeDirectory: File = File(mStoreDir)
-                if (!storeDirectory.exists()) {
-                    val success = storeDirectory.mkdirs()
-                    if (!success) {
-                        throw Exception("failed to create file storage directory.")
-                    }
-                }
-
-            }
-            val size : Int =  dirSize( File(mStoreDir))
-            var fileOutputStream: FileOutputStream =   FileOutputStream(mStoreDir +"/newrune_"+size+ ".png")
-            resizedBmp.compress(Bitmap.CompressFormat.JPEG, 70, fileOutputStream)
-            fileOutputStream.close()
-
-        }
 
         println(classes[maxPos])
-
-
         model.close()
+
+    }
+
+    private fun searchForBbox(){
+
+        val model = RuneBounding.newInstance(runeAnalyzerService)
+
+        // Creates inputs for reference.
+        val inputFeature = TensorBuffer.createFixedSize(intArrayOf(1, 256, 256, 3), DataType.FLOAT32)
+        inputFeature.loadBuffer(byteBuffer)
+
+        // Runs model inference and gets result.
+        val outputs = model.process(inputFeature)
+        val outputBBox = outputs.outputFeature1AsTensorBuffer
+
+        // Releases model resources if no longer used.
+        model.close()
+
+        var bmpLocal = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
+
+        val resizedBmp: Bitmap = Bitmap.createBitmap(bmpLocal, (outputBBox.floatArray[0] * bmpLocal.width).toInt(), (outputBBox.floatArray[1] * bmpLocal.height).toInt(), (outputBBox.floatArray[2] * bmpLocal.width).toInt(), (outputBBox.floatArray[3] * bmpLocal.height).toInt())
+
+        var folderDir : String = "/DCIM/SWrunesStorage/"
+        var mStoreDir: String? = null
+        val externalFilesDir = runeAnalyzerService.getExternalFilesDir(null)
+        if (externalFilesDir != null) {
+            mStoreDir =
+                Environment.getExternalStorageDirectory().absolutePath.toString() + folderDir
+            val storeDirectory: File = File(mStoreDir)
+            if (!storeDirectory.exists()) {
+                val success = storeDirectory.mkdirs()
+                if (!success) {
+                    throw Exception("failed to create file storage directory.")
+                }
+            }
+
+        }
+        val size : Int =  dirSize( File(mStoreDir))
+        var fileOutputStream: FileOutputStream =   FileOutputStream(mStoreDir +"/newrune_"+size+ ".png")
+        resizedBmp.compress(Bitmap.CompressFormat.JPEG, 70, fileOutputStream)
+        fileOutputStream.close()
+        bmpLocal.recycle()
     }
 
 
