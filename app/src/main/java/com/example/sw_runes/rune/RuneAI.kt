@@ -107,7 +107,19 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmapByteArray : ByteA
 
         var bmpLocal = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
 
-        val resizedBmp: Bitmap = Bitmap.createBitmap(bmpLocal, (outputBBox.floatArray[0] * bmpLocal.width).toInt(), (outputBBox.floatArray[1] * bmpLocal.height).toInt(), (outputBBox.floatArray[2] * bmpLocal.width).toInt(), (outputBBox.floatArray[3] * bmpLocal.height).toInt())
+        println("bmp width : "+bmpLocal.width)
+        println("bmp height : "+bmpLocal.height)
+
+        var xmin =  (outputBBox.floatArray[0] * bmpLocal.width).toInt()
+        var ymin =  (outputBBox.floatArray[1] * bmpLocal.height).toInt()
+        var xmax =  (outputBBox.floatArray[2] * bmpLocal.width).toInt()
+        var ymax =  (outputBBox.floatArray[3] * bmpLocal.height).toInt()
+        println("xmin px : "+ xmin)
+        println("ymin px : "+ ymin)
+        println("xmax px : "+ xmax)
+        println("ymax px : "+ ymax)
+
+        val resizedBmp: Bitmap = Bitmap.createBitmap(bmpLocal,xmin,ymin,xmax-xmin,ymax-ymin )
 
         var folderDir : String = "/DCIM/SWrunesStorage/"
         var mStoreDir: String? = null
@@ -129,6 +141,7 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmapByteArray : ByteA
         resizedBmp.compress(Bitmap.CompressFormat.JPEG, 70, fileOutputStream)
         fileOutputStream.close()
         bmpLocal.recycle()
+        resizedBmp.recycle()
     }
 
 

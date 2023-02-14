@@ -87,8 +87,8 @@ class RuneAnalyzerService : LifecycleService() {
 
         val bitmap = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
 
-        var runeAi : RuneAI = RuneAI(this)
-        runeAi.inherance(bitmap)
+        var runeAi : RuneAI = RuneAI(this,bitmapByteArray)
+        runeAi.inherance()
         rune = Rune(this).setRune(this,bitmap)
 
     }
