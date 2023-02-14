@@ -111,9 +111,25 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmapByteArray : ByteA
         println("bmp height : "+bmpLocal.height)
 
         var xmin =  (outputBBox.floatArray[0] * bmpLocal.width).toInt()
+        xmin = xmin - xmin /10
+        if(xmin < 0)
+            xmin = 0
+
         var ymin =  (outputBBox.floatArray[1] * bmpLocal.height).toInt()
+        ymin = ymin - ymin /10
+        if(ymin < 0)
+            ymin = 0
+
         var xmax =  (outputBBox.floatArray[2] * bmpLocal.width).toInt()
+        xmax = xmax + xmax /10
+        if(xmax > bmpLocal.width)
+            xmax = bmpLocal.width
+
         var ymax =  (outputBBox.floatArray[3] * bmpLocal.height).toInt()
+        ymax = ymax + ymax /10
+        if(ymax > bmpLocal.height)
+            ymax = bmpLocal.height
+        
         println("xmin px : "+ xmin)
         println("ymin px : "+ ymin)
         println("xmax px : "+ xmax)
