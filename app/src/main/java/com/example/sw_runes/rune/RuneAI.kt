@@ -2,10 +2,10 @@ package com.example.sw_runes.rune
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Rect
 import android.media.ThumbnailUtils
 import android.os.Environment
-import com.example.sw_runes.ml.RuneBounding
-import com.example.sw_runes.ml.RuneDetection
+import com.example.sw_runes.ml.RuneMl
 import com.example.sw_runes.services.RuneAnalyzerService
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
@@ -51,18 +51,17 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmapByteArray : ByteA
         bmpLocal?.recycle()
     }
 
-    fun inherance(){
+    fun inherance():Rect?{
 
 
-        searchForRune()
-        searchForBbox()
+       return searchForRune()
 
 
     }
 
-    private fun searchForRune(){
+    private fun searchForRune() : Rect?{
 
-        val model = RuneDetection.newInstance(runeAnalyzerService)
+        val model = RuneMl.newInstance(runeAnalyzerService)
 
         // Creates inputs for reference.
         val inputFeature = TensorBuffer.createFixedSize(intArrayOf(1, imageSize, imageSize, 3), DataType.FLOAT32)
@@ -70,10 +69,9 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmapByteArray : ByteA
 
         // Runs model inference and gets result.
         val outputs = model.process(inputFeature)
-        val outputFeatureRune = outputs.outputFeature0AsTensorBuffer
 
-
-        val confidences = outputFeatureRune.floatArray
+        val confidences = outputs.outputFeature0AsTensorBuffer.floatArray
+        var outputBBox = outputs.outputFeature1AsTensorBuffer.floatArray
         // find the index of the class with the biggest confidence.
         // find the index of the class with the biggest confidence.
         var maxPos = 0
@@ -86,46 +84,39 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmapByteArray : ByteA
         }
 
         println(classes[maxPos])
+
         model.close()
 
+        if (classes[maxPos] == "rune")
+            return searchForBbox(outputBBox)
+        else
+            return null
     }
 
-    private fun searchForBbox(){
+    private fun searchForBbox(outputBBox: FloatArray):Rect{
 
-        val model = RuneBounding.newInstance(runeAnalyzerService)
-
-        // Creates inputs for reference.
-        val inputFeature = TensorBuffer.createFixedSize(intArrayOf(1, 256, 256, 3), DataType.FLOAT32)
-        inputFeature.loadBuffer(byteBuffer)
-
-        // Runs model inference and gets result.
-        val outputs = model.process(inputFeature)
-        val outputBBox = outputs.outputFeature1AsTensorBuffer
-
-        // Releases model resources if no longer used.
-        model.close()
 
         var bmpLocal = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
 
         println("bmp width : "+bmpLocal.width)
         println("bmp height : "+bmpLocal.height)
 
-        var xmin =  (outputBBox.floatArray[0] * bmpLocal.width).toInt()
+        var xmin =  (outputBBox[0] * bmpLocal.width).toInt()
         xmin = xmin - xmin /10
         if(xmin < 0)
             xmin = 0
 
-        var ymin =  (outputBBox.floatArray[1] * bmpLocal.height).toInt()
+        var ymin =  (outputBBox[1] * bmpLocal.height).toInt()
         ymin = ymin - ymin /10
         if(ymin < 0)
             ymin = 0
 
-        var xmax =  (outputBBox.floatArray[2] * bmpLocal.width).toInt()
+        var xmax =  (outputBBox[2] * bmpLocal.width).toInt()
         xmax = xmax + xmax /10
         if(xmax > bmpLocal.width)
             xmax = bmpLocal.width
 
-        var ymax =  (outputBBox.floatArray[3] * bmpLocal.height).toInt()
+        var ymax =  (outputBBox[3] * bmpLocal.height).toInt()
         ymax = ymax + ymax /10
         if(ymax > bmpLocal.height)
             ymax = bmpLocal.height
@@ -158,6 +149,8 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmapByteArray : ByteA
         fileOutputStream.close()
         bmpLocal.recycle()
         resizedBmp.recycle()
+
+        return Rect(xmin,ymin,xmax,ymax)
     }
 
 
@@ -172,6 +165,8 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmapByteArray : ByteA
         }
         return 0
     }
+
+
 
 
 
