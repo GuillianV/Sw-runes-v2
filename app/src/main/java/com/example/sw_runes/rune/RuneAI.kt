@@ -15,21 +15,20 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 
-class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmapByteArray : ByteArray) {
+class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmap: Bitmap) {
 
     val imageSize : Int = 256
 
     var runeAnalyzerService : RuneAnalyzerService
-    var bitmapByteArray : ByteArray
+    var bitmap : Bitmap
     private var byteBuffer : ByteBuffer
 
     val classes = arrayOf("rune", "norune")
 
     init {
         runeAnalyzerService = _runeAnalyzerService
-        bitmapByteArray = _bitmapByteArray
-
-        var bmpLocal = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
+        bitmap = _bitmap
+        var bmpLocal = _bitmap
         bmpLocal = Bitmap.createScaledBitmap(bmpLocal, imageSize, imageSize, false)
         byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3)
         byteBuffer.order(ByteOrder.nativeOrder())
@@ -96,37 +95,35 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmapByteArray : ByteA
     private fun searchForBbox(outputBBox: FloatArray):Rect{
 
 
-        var bmpLocal = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
+        println("bmp width : "+bitmap.width)
+        println("bmp height : "+bitmap.height)
 
-        println("bmp width : "+bmpLocal.width)
-        println("bmp height : "+bmpLocal.height)
-
-        var xmin =  (outputBBox[0] * bmpLocal.width).toInt()
-        xmin = xmin - xmin /10
+        var xmin =  (outputBBox[0] * bitmap.width).toInt()
+        xmin = xmin - 50
         if(xmin < 0)
             xmin = 0
 
-        var ymin =  (outputBBox[1] * bmpLocal.height).toInt()
-        ymin = ymin - ymin /10
+        var ymin =  (outputBBox[1] * bitmap.height).toInt()
+        ymin = ymin - 50
         if(ymin < 0)
             ymin = 0
 
-        var xmax =  (outputBBox[2] * bmpLocal.width).toInt()
-        xmax = xmax + xmax /10
-        if(xmax > bmpLocal.width)
-            xmax = bmpLocal.width
+        var xmax =  (outputBBox[2] * bitmap.width).toInt()
+        xmax = xmax + 50
+        if(xmax > bitmap.width)
+            xmax = bitmap.width
 
-        var ymax =  (outputBBox[3] * bmpLocal.height).toInt()
-        ymax = ymax + ymax /10
-        if(ymax > bmpLocal.height)
-            ymax = bmpLocal.height
+        var ymax =  (outputBBox[3] * bitmap.height).toInt()
+        ymax = ymax + 50
+        if(ymax > bitmap.height)
+            ymax = bitmap.height
         
         println("xmin px : "+ xmin)
         println("ymin px : "+ ymin)
         println("xmax px : "+ xmax)
         println("ymax px : "+ ymax)
 
-        val resizedBmp: Bitmap = Bitmap.createBitmap(bmpLocal,xmin,ymin,xmax-xmin,ymax-ymin )
+        val resizedBmp: Bitmap = Bitmap.createBitmap(bitmap,xmin,ymin,xmax-xmin,ymax-ymin )
 
         var folderDir : String = "/DCIM/SWrunesStorage/"
         var mStoreDir: String? = null
@@ -146,9 +143,8 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmapByteArray : ByteA
         val size : Int =  dirSize( File(mStoreDir))
         var fileOutputStream: FileOutputStream =   FileOutputStream(mStoreDir +"/newrune_"+size+ ".png")
         resizedBmp.compress(Bitmap.CompressFormat.JPEG, 70, fileOutputStream)
+        runeAnalyzerService.setBitmap(resizedBmp)
         fileOutputStream.close()
-        bmpLocal.recycle()
-        resizedBmp.recycle()
 
         return Rect(xmin,ymin,xmax,ymax)
     }

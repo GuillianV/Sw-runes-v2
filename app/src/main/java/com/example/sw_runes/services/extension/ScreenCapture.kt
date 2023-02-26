@@ -136,7 +136,7 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
 
 
                 bitmapSaver.pickedHandler = {
-                    runeAnalyzerService.setRune(it)
+                    runeAnalyzerService.setRune()
                 }
 
                 bitmapSaver.takePick()
@@ -155,7 +155,7 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
         private   lateinit var buffer : Buffer
         private  var pixelStride : Int = 0
         private  var rowPadding: Int = 0
-        private  var bitmapByteArray : ByteArray? = null
+        //private  var bitmapByteArray : ByteArray? = null
 
         private  var folderDir : String = "/DCIM/SWrunesStorage/"
         private var preBitmapText : String = "sw_"
@@ -167,7 +167,7 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
 
         private var takepick = false;
 
-        var pickedHandler : (ByteArray) -> Unit = {}
+        var pickedHandler : () -> Unit = {}
 
 
         inner class ImageAvailableListener : OnImageAvailableListener {
@@ -193,9 +193,9 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
                         return
 
                     captureBitmap()
-                    saveBitmap()
+                    //saveBitmap()
                     takepick = false
-                    getBitmapByteArray()?.let(pickedHandler)
+                    pickedHandler()
 
                 } catch (e: Exception) {
                     takepick = false
@@ -217,8 +217,9 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
                     )
                     bitmap.copyPixelsFromBuffer(buffer)
 
-                    bitmapByteArray = bitmap.toByteArray()
-                    bitmap.recycle()
+                    runeAnalyzerService.setBitmap(bitmap)
+                    //bitmapByteArray = bitmap.toByteArray()
+                    //bitmap.recycle()
                 } catch (ioe: IOException) {
                     ioe.printStackTrace()
                 }
@@ -226,7 +227,7 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
 
         }
 
-        private fun saveBitmap(){
+      /*  private fun saveBitmap(){
 
             if (bitmapByteArray == null)
                 return
@@ -256,14 +257,14 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
             bitmap?.recycle()
 
         }
-
+*/
         fun takePick(){
             if (!takepick)
                 takepick = true;
 
         }
 
-        fun getBitmap():Bitmap?{
+       /* fun getBitmap():Bitmap?{
            return bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
 
         }
@@ -271,7 +272,7 @@ class ScreenCapture(_runeAnalyzerService: RuneAnalyzerService) {
         fun getBitmapByteArray(): ByteArray? {
             return bitmapByteArray;
         }
-
+*/
 
         private fun Bitmap.toByteArray():ByteArray{
             ByteArrayOutputStream().apply {

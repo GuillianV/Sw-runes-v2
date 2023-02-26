@@ -63,7 +63,7 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
             }
 
             runeAnalyzerService.mutableBubbleStatus.value = TapStatus.Ready
-            _bitmap?.recycle()
+           // _bitmap?.recycle()
 
 
         }.addOnFailureListener { throw Exception("Erreur recognizer") }.addOnCompleteListener {

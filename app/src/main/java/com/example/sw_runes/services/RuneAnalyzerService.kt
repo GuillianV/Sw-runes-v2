@@ -5,6 +5,7 @@ import android.app.Notification
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.widget.Toast
 import androidx.core.util.Pair
@@ -29,6 +30,8 @@ class RuneAnalyzerService : LifecycleService() {
 
 
     var rune : Rune? = null
+
+    private  var bitmap : Bitmap? = null
 
     var mutableBubbleStatus: MutableLiveData<String> = MutableLiveData()
 
@@ -68,6 +71,20 @@ class RuneAnalyzerService : LifecycleService() {
     }
 
 
+    fun setBitmap(_bitmap: Bitmap){
+        if (bitmap != null){
+            bitmap?.recycle()
+            bitmap = null
+        }
+
+        bitmap = _bitmap
+    }
+
+    fun getBitmap() : Bitmap? {
+
+        return  bitmap
+
+    }
 
 
     override fun onCreate() {
@@ -83,13 +100,22 @@ class RuneAnalyzerService : LifecycleService() {
     }
 
 
-    fun setRune(bitmapByteArray: ByteArray){
+    fun setRune(){
 
-        val bitmap = bitmapByteArray.let { BitmapFactory.decodeByteArray(bitmapByteArray, 0, it!!.size) }
 
-        var runeAi : RuneAI = RuneAI(this,bitmapByteArray)
-        runeAi.inherance()
-        rune = Rune(this).setRune(this,bitmap)
+        getBitmap()?.let {bmp ->
+
+        var runeAi : RuneAI = RuneAI(this,bmp)
+            runeAi.inherance()
+
+        }
+
+        getBitmap()?.let {bmp ->
+
+            rune = Rune(this).setRune(this,bmp)
+
+        }
+
 
     }
 
