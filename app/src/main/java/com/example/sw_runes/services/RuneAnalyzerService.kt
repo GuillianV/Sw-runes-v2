@@ -106,7 +106,7 @@ class RuneAnalyzerService : LifecycleService() {
         getBitmap()?.let {bmp ->
 
         var runeAi : RuneAI = RuneAI(this,bmp)
-            runeAi.inherance()
+            runeAi.inherance()?.let { setBitmap(it) }
 
         }
 

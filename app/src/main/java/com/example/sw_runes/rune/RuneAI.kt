@@ -50,7 +50,7 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmap: Bitmap) {
         bmpLocal?.recycle()
     }
 
-    fun inherance():Rect?{
+    fun inherance():Bitmap?{
 
 
        return searchForRune()
@@ -58,7 +58,7 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmap: Bitmap) {
 
     }
 
-    private fun searchForRune() : Rect?{
+    private fun searchForRune() : Bitmap?{
 
         val model = RuneMl.newInstance(runeAnalyzerService)
 
@@ -92,7 +92,7 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmap: Bitmap) {
             return null
     }
 
-    private fun searchForBbox(outputBBox: FloatArray):Rect{
+    private fun searchForBbox(outputBBox: FloatArray):Bitmap{
 
 
         println("bmp width : "+bitmap.width)
@@ -143,10 +143,10 @@ class RuneAI(_runeAnalyzerService: RuneAnalyzerService, _bitmap: Bitmap) {
         val size : Int =  dirSize( File(mStoreDir))
         var fileOutputStream: FileOutputStream =   FileOutputStream(mStoreDir +"/newrune_"+size+ ".png")
         resizedBmp.compress(Bitmap.CompressFormat.JPEG, 70, fileOutputStream)
-        runeAnalyzerService.setBitmap(resizedBmp)
+        //runeAnalyzerService.setBitmap(resizedBmp)
         fileOutputStream.close()
 
-        return Rect(xmin,ymin,xmax,ymax)
+        return resizedBmp
     }
 
 
