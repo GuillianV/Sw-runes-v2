@@ -14,12 +14,15 @@ import com.example.sw_runes.sw.rune.emplacement.Emplacement
 import com.example.sw_runes.sw.rune.stats.primary.PrimaryStat
 import com.example.sw_runes.sw.rune.stats.sub.SubStat
 import com.example.sw_runes.utils.StringUtil
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
-
+import kotlin.coroutines.*
 class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
 
     var runeAnalyzerService: RuneAnalyzerService
@@ -42,45 +45,24 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
     var runeSubStatInnate : SubStat = SubStat()
     var runeSubStats : List<SubStat> = arrayListOf()
 
-    fun  setRune(context: Context, _bitmap: Bitmap) : Rune?{
 
 
+
+     suspend fun setRune(_bitmap: Bitmap): Boolean = coroutineScope {
         bitmap = _bitmap
-        val inputImage = InputImage.fromBitmap(_bitmap,0)
+        val inputImage = InputImage.fromBitmap(_bitmap, 0)
+        val visionTextTask = recognizer.process(inputImage)
 
+        val visionText =  Tasks.await(visionTextTask)
 
-        recognizer.process(inputImage).addOnSuccessListener { visionText ->
+        var textBlocksSorted: List<Text.TextBlock> = visionText.textBlocks.sortedWith(compareBy { it.boundingBox?.top })
 
-
-            var textBlocksSorted : List<Text.TextBlock> = visionText.textBlocks.sortedWith(compareBy { it.boundingBox?.top })
-
-
-            if(!setRuneBaseStats(textBlocksSorted) || !setPrimaryStat(textBlocksSorted))
-                onNotRuneDetected()
-            else{
-                setSubStats(textBlocksSorted)
-                onRuneDetected()
-            }
-
-            runeAnalyzerService.mutableBubbleStatus.value = TapStatus.Ready
-           // _bitmap?.recycle()
-
-
-        }.addOnFailureListener { throw Exception("Erreur recognizer") }.addOnCompleteListener {
-
+        if (!setRuneBaseStats(textBlocksSorted) || !setPrimaryStat(textBlocksSorted)) {
+            return@coroutineScope false
+        } else {
+            setSubStats(textBlocksSorted)
+            return@coroutineScope true
         }
-
-        return this
-    }
-
-
-    private fun onRuneDetected(){
-        runeAnalyzerService.showRuneOptimisation()
-
-    }
-
-    private fun onNotRuneDetected(){
-        runeAnalyzerService.toastError("Rune non détecté")
     }
 
 

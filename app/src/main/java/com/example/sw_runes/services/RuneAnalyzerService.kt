@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Looper
 import android.widget.Toast
 import androidx.core.util.Pair
 import androidx.lifecycle.LifecycleService
@@ -18,6 +19,8 @@ import com.example.sw_runes.services.extension.RuneOptimisation
 import com.example.sw_runes.services.extension.ScreenCapture
 import com.example.sw_runes.sw.rune.Rune
 import com.example.sw_runes.utils.Notifications
+import com.google.android.gms.tasks.Tasks
+import kotlinx.coroutines.*
 
 class RuneAnalyzerService : LifecycleService() {
 
@@ -102,17 +105,49 @@ class RuneAnalyzerService : LifecycleService() {
 
     fun setRune(){
 
+        var localBmp : Bitmap? = null
 
         getBitmap()?.let {bmp ->
-
         var runeAi : RuneAI = RuneAI(this,bmp)
-            runeAi.inherance()?.let { setBitmap(it) }
+            runeAi.inherance()?.let { localBmp = it }
 
         }
 
+        rune = Rune(this)
+
         getBitmap()?.let {bmp ->
 
-            rune = Rune(this).setRune(this,bmp)
+                if (localBmp != null ){
+
+
+                    CoroutineScope(Dispatchers.Main).launch {
+                        runBlocking {
+
+                        withContext(Dispatchers.IO) {
+
+                                if (Looper.myLooper() == null) {
+                                    // Si aucun Looper n'existe, en créer un nouveau
+                                    Looper.prepare()
+                                }
+
+                                val isRune = async { rune?.setRune(localBmp!!) }.await()
+                                if (isRune == null || !isRune) {
+                                    localBmp?.recycle()
+                                    async {  rune?.setRune(bmp) }.await()
+
+                                }else
+                                    setBitmap(localBmp!!)
+                                //
+                            }
+                        }
+                        mutableBubbleStatus.value = TapStatus.Ready
+                        showRuneOptimisation()
+                    }
+
+                }
+
+
+
 
         }
 
