@@ -139,7 +139,7 @@ tools:ignore="Overdraw">
                                     android:fontFamily="@font/inter_regular"
                                     android:text="PV"
                                     android:textColor="#ff000000"
-                                    android:textSize="45px"
+                                    android:textSize="40px"
 
                                     />
 
@@ -151,7 +151,7 @@ tools:ignore="Overdraw">
                                     android:fontFamily="@font/inter_regular"
                                     android:text="+2048"
                                     android:textColor="#ff000000"
-                                    android:textSize="45px"
+                                    android:textSize="40px"
                                     android:gravity="end"
 
                                     />
@@ -519,7 +519,17 @@ tools:ignore="Overdraw">
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical">
+
+
+                <Button
+                    android:id="@+id/button_cross"
+                    android:layout_margin="32px"
+                    android:layout_width="100px"
+                    android:layout_gravity="end"
+                    android:layout_height="100px"
+                    android:background="@drawable/cross" />
+            </LinearLayout>
 
         </LinearLayout>
 

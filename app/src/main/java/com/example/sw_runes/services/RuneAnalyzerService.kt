@@ -29,10 +29,10 @@ class RuneAnalyzerService : LifecycleService() {
 
     lateinit var bubble : Bubble
     lateinit var screenCapture: ScreenCapture
-    lateinit var runeOptimisation: RuneOptimisation
+    var runeOptimisation: RuneOptimisation? = null
 
 
-    var rune : Rune? = null
+    lateinit var rune : Rune
 
     private  var bitmap : Bitmap? = null
 
@@ -126,14 +126,13 @@ class RuneAnalyzerService : LifecycleService() {
                         withContext(Dispatchers.IO) {
 
                                 if (Looper.myLooper() == null) {
-                                    // Si aucun Looper n'existe, en créer un nouveau
                                     Looper.prepare()
                                 }
 
-                                val isRune = async { rune?.setRune(localBmp!!) }.await()
-                                if (isRune == null || !isRune) {
+                                var res= async { rune.setRune(localBmp!!) }.await()
+                                if (!rune.isViable) {
                                     localBmp?.recycle()
-                                    async {  rune?.setRune(bmp) }.await()
+                                    res = async {  rune.setRune(bmp) }.await()
 
                                 }else
                                     setBitmap(localBmp!!)
@@ -156,13 +155,16 @@ class RuneAnalyzerService : LifecycleService() {
 
     fun showRuneOptimisation(){
 
-        if (rune == null){
+        if (rune.isViable == false){
             toastError("Aucune rune trouvé")
             return
         }
 
+        if (runeOptimisation != null){
+            runeOptimisation!!.destroyRuneOptimisation()
+        }
         runeOptimisation = RuneOptimisation(this,rune!!)
-        runeOptimisation.createRuneOptimisation()
+        runeOptimisation?.createRuneOptimisation()
     }
 
     fun toastError(message:String){

@@ -38,6 +38,20 @@ class RuneLevel {
 
         }
 
+        fun getProcsDone(runeLevel: Int): Int{
+
+            if (runeLevel < THREE)
+                return 0
+            if (runeLevel < SIX)
+                return 1
+            if (runeLevel < NINE)
+                return 2
+            if (runeLevel < TWELVE)
+                return 3
+
+            return 4
+        }
+
 
     }
 

@@ -33,6 +33,7 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     lateinit var bitmap : Bitmap
     lateinit var runeOptimisationFragment : RuneOptimisationFragment
+    var isViable : Boolean = false
 
 
     //Rune params
@@ -42,7 +43,7 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
     var runeStar : RuneStar = RuneStar(0)
     //Rune stats
     var runePrimaryStat : PrimaryStat = PrimaryStat()
-    var runeSubStatInnate : SubStat = SubStat()
+    var runeInnateStat : SubStat? = null
     var runeSubStats : List<SubStat> = arrayListOf()
 
 
@@ -61,6 +62,11 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
             return@coroutineScope false
         } else {
             setSubStats(textBlocksSorted)
+            setOtherStats();
+            isViable = true
+
+
+
             return@coroutineScope true
         }
     }
@@ -90,7 +96,6 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
         return true
     }
 
-
     private fun setPrimaryStat(textBlocks: List<Text.TextBlock>): Boolean{
 
         textBlocks.forEach { textblock ->
@@ -111,7 +116,6 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
 
         return (runeStar.NUMBER != RuneStar.NaN && runePrimaryStat.PRIMARY.ACTUAL_STAT != 0)
     }
-
 
     private fun setSubStats(textBlocks: List<Text.TextBlock>){
 
@@ -146,6 +150,14 @@ class Rune(_runeAnalyzerService : RuneAnalyzerService)  {
 
         runeSubStats = subStats
 
+    }
+
+    private fun setOtherStats(){
+
+        val procsDone = RuneLevel.getProcsDone(runeLevel)
+        val procsRemaining = Rarity.getProcsRemaining(runeRarity,procsDone)
+        val isInnateStatIn = SubStat.isInnateStat(runeSubStats,runeRarity)
+        println()
     }
 
 

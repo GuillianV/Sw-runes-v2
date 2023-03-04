@@ -114,7 +114,7 @@ class HealthPercent: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-        override var statsList:  Array<Int> = arrayOf(8,10,13,15,18,20,23,25,28,30,33,35,38,40,43,51)
+        override var statsList:  Array<Int> = arrayOf(8,10,12,15,17,20,22,24,27,29,32,34,37,40,43,51)
 
 
     }

@@ -38,10 +38,7 @@ class RuneOptimisationFragment(_runeAnalyzerService: RuneAnalyzerService, _rune 
         _binding = RuneOptimisationBinding.inflate(inflater,container,false)
         val view = binding.root
         bindView()
-        binding.container.setOnTouchListener { view, motionEvent -> onTouchListener(view,motionEvent) }
-       
-        
-        
+
         return view
     }
 
@@ -111,6 +108,11 @@ class RuneOptimisationFragment(_runeAnalyzerService: RuneAnalyzerService, _rune 
         binding.tvRuneOptimisation.setText(poidsCumule.toString())
 
 
+        binding.buttonCross.setOnClickListener {
+            runeAnalyzerService.runeOptimisation?.destroyRuneOptimisation()
+        }
+
+
     }
 
 
@@ -132,70 +134,6 @@ class RuneOptimisationFragment(_runeAnalyzerService: RuneAnalyzerService, _rune 
 
 
 
-    private fun onTouchListener(view : View , motionEvent: MotionEvent): Boolean {
-
-
-        if (windowManager == null || windowManagerSettings == null)
-            false
-
-        return if (motionEvent?.action != MotionEvent.ACTION_OUTSIDE)
-        {
-
-
-
-            when (motionEvent!!.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    initialX = windowManagerSettings!!.x
-                    initialY = windowManagerSettings!!.y
-                    initialTouchX = motionEvent!!.rawX
-                    initialTouchY = motionEvent!!.rawY
-
-
-
-
-                }
-                MotionEvent.ACTION_UP -> {
-
-                    if (dragVale <=30){
-                        dragVale = 0
-                        var difference: Long = System.currentTimeMillis() - startTime
-                        if (difference >= 500){
-                            interact(TapStatus.Tap)
-                            startTime = System.currentTimeMillis();
-
-                        }
-
-
-
-                    }
-
-                    else{
-                        dragVale = 0
-                        interact(TapStatus.DragEnd)
-                    }
-
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    windowManagerSettings?.x = initialX + (motionEvent!!.rawX - initialTouchX).toInt()
-                    windowManagerSettings?.y = initialY + (motionEvent!!.rawY - initialTouchY).toInt()
-                    dragVale = Math.abs((motionEvent!!.rawX - initialTouchX).toInt()) +Math.abs((motionEvent!!.rawY - initialTouchY).toInt())
-
-                    windowManager!!.updateViewLayout(binding.root, windowManagerSettings)
-                    if (dragVale >= 30){
-                        interact(TapStatus.Dragging)
-                    }
-                }
-
-            }
-
-            true
-
-        }
-        else false
-
-
-    }
-
 
 
 
@@ -213,27 +151,19 @@ class RuneOptimisationFragment(_runeAnalyzerService: RuneAnalyzerService, _rune 
         when (status) {
             TapStatus.Dragging -> {
 
-                sendRuneOptimisationTapStatus(TapStatus.Dragging)
             }
             TapStatus.DragEnd -> {
-                sendRuneOptimisationTapStatus(TapStatus.DragEnd)
             }
             TapStatus.Tap -> {
 
-                sendRuneOptimisationTapStatus(TapStatus.Tap)
-
             }
             else -> {
-                sendRuneOptimisationTapStatus(TapStatus.Ready)
             }
 
         }
 
     }
 
-    private fun sendRuneOptimisationTapStatus(tapStatus: String){
-      runeAnalyzerService.runeOptimisation.destroyRuneOptimisation()
-    }
 
 
 

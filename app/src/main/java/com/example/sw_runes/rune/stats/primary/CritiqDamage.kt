@@ -113,7 +113,7 @@ class CritiqDamage: PrimaryStat() {
         init {
             ACTUAL_STAT = statValue
         }
-          override var statsList:  Array<Int> = arrayOf(8,11,14,17,21,24,27,31,34,41,44,47,51,54,65)
+          override var statsList:  Array<Int> = arrayOf(8,11,14,17,21,24,27,31,34,37,41,44,47,51,54,65)
  
 
     }
